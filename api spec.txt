@@ -1,0 +1,63 @@
+Subscription
+GET /topic - list by topic : paginated
+GET /{id} - get by id
+POST /subscribe - add a suscriber to sub
+POST /unsubscribe - remove a subscriber from sub
+
+Subscriber
+GET /{email} - get subsriber info by email
+GET /subscription/{email} - list subscriber subscription topics : paginated
+GET /all - list all subscribers paginated
+
+
+
+Publisher to PubSub - done
+Subscriber to PubSub message 
+
+Topic (technology, food, human-languages, algorithms)
+Article (Topic, ArticleData(Topic, ArticleData)), 
+Newsletter(ArticleHeader, ArticleBody(Article), ArticleFooter)
+
+
+UserService - manage users
+UserSubscriptionService - manage user subcriptions
+TopicService - manage all areas we cover (food, languages, technology, life, cultures, motivations, cryptocurrencies)
+SchedulerService - periodically retrieve all due items. process and queue. Update next due
+ProcessorService - asynchronously dequeue messages, create velocity templates and pass to mail service
+MailService - asynschonously send out emails(newsletter, motivational quotes)
+NotificationService - users can configure how to recieve newsletters.
+PaymentService - manage users payment
+
+
+
+User(id, firstname, lastname, email, ipAddress, dateJoined)
+Topic(id, name, description, dateAdded), TopicItem(id, title, description, dateAdded
+	/topic/id, /topic/id/users, /topic/create, /topic/id/update, /topic/id/delete
+	save, create, update, delete
+	TopicItem - /topicitem/id, /topicitem/create, /topicitem/id/update, /topicitem/id/delete
+Subscription(email, topic, frequency, dateDue, dateSubscribed)
+
+
+TopicItem [1,Word]
+TopicItemProperties[
+			[1,name,joy],
+			[1,meaning,shows one is happy],
+			[1,origin,english],
+			[1,opposite,anger]
+		   ]
+
+one to many relationship
+
+Done
+1. fetch a topic
+2. fetch items under a topic
+3. save topic
+4. save topic items
+user
+1. save user
+2. get user by email
+3. get users by id
+4. get user by ipAddress
+
+Doing
+1. subscription api
