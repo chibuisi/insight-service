@@ -1,0 +1,42 @@
+version: "3"
+services:
+  mysql:
+    container_name: di-mysql
+    image: mysql:5.7
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - TZ #must be set in .env
+    ports:
+    - 3310:3306
+    expose:
+      - 3310
+    volumes:
+    - mysql:/c/mysql
+
+#  redis:
+#    container_name: di-redis
+#    image: redis:5.0.3-alpine
+#    ports:
+#    - 6379:6379
+#
+#  pubsub:
+#    container_name: di-pubsub
+#    image: messagebird/gcloud-pubsub-emulator
+#    ports:
+#    - 8681:8681
+#    environment:
+#      PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
+#      PUBSUB_EMULATOR_HOST: "localhost:8681"
+#
+#  datastore:
+#    container_name: di-datastore
+#    image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
+#    command: ["/bin/sh", "-c", "gcloud beta emulators datastore start --data-dir=/opt/data --host-port=0.0.0.0:8081 --consistency=1.0 --store-on-disk --project=is-daily-insights-dev"]
+#    ports:
+#    - 18081:8081
+#    environment:
+#      DATASTORE_PROJECT_ID: "is-daily-insights-dev"
+#      DATASTORE_LISTEN_ADDRESS: "0.0.0.0"
+#      DATASTORE_OPTIONS: "--consistency=1.0 --no-store-on-disk"
+volumes:
+  mysql:

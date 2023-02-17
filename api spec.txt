@@ -61,3 +61,8 @@ user
 
 Doing
 1. subscription api
+
+
+
+Challenges faced
+1. I could not get unique constraint working on the field title. I solved it by
