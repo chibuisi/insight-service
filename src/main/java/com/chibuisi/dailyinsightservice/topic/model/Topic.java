@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -20,7 +17,7 @@ public class Topic {
     @Id
     //@GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
-    //private Integer topicId;
+    @Column(unique = true)
     private String name;
     private String description;
     private LocalDateTime dateAdded;

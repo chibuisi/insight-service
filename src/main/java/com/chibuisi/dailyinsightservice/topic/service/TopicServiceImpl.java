@@ -20,15 +20,8 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public Topic save(Topic topic) {
         topic.setDateAdded(LocalDateTime.now());
-        Optional<SupportedTopics> supTopic = Arrays.stream(SupportedTopics.values())
-                .filter(e -> e.getName().equalsIgnoreCase(topic.getName())).findFirst();
-        if(supTopic.isPresent()){
-            topic.setId(supTopic.get().getValue());
-            topic.setName(supTopic.get().getName());
-        }
-        else{
-            return null;
-        }
+        topic.setName(SupportedTopics.of(topic.getName()).getName());
+        topic.setId(SupportedTopics.of(topic.getName()).getValue());
         return topicRepository.save(topic);
     }
 

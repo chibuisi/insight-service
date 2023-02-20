@@ -1,5 +1,7 @@
 package com.chibuisi.dailyinsightservice.topic.model;
 
+import java.util.stream.Stream;
+
 public enum SupportedTopics {
     MOTIVATION(1),
     TECHNOLOGY(2),
@@ -22,9 +24,12 @@ public enum SupportedTopics {
 
     @Override
     public String toString() {
-        return "SupportedTopics{" +
-                name() +
-                "=" + value +
-                '}';
+        return this.getName();
+    }
+
+    public static SupportedTopics of(String name){
+        return Stream.of(SupportedTopics.values())
+                .filter(s -> s.getName().equalsIgnoreCase(name)).findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 }

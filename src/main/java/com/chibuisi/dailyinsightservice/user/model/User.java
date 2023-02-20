@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,6 +19,7 @@ public class User {
     private Long id;
     private String firstname;
     private String lastname;
+    @Column(unique = true)
     private String email;
     private LocalDateTime dateJoined;
     private String ipAddress;
