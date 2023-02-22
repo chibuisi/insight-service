@@ -9,6 +9,11 @@ import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class ScheduleService {
 
@@ -65,54 +70,148 @@ public class ScheduleService {
         }
     }
 
-    public void deleteSchedule(Long userId, String topic, String scheduleType){
-        ScheduleDTO scheduleDTO = ScheduleDTO.builder()
-                .userId(userId).topic(topic).scheduleType(scheduleType).build();
-        SupportedTopics foundTopic = SupportedTopics.of(scheduleDTO.getTopic());
-        Schedule schedule = getScheduleInstance(scheduleDTO);
+    public Schedule pauseUnpauseSchedule(Long userId, String topic, String scheduleType){
+        SupportedTopics foundTopic = SupportedTopics.of(topic);
+        Schedule schedule = getScheduleInstanceFromUserIdAndTopic(userId, topic, scheduleType);
         if(schedule instanceof DailyCustomSchedule){
             DailyCustomSchedule existing = dailyCustomScheduleRepository
-                    .findDailyCustomScheduleByUserIdAndTopic(scheduleDTO.getUserId(),
+                    .findDailyCustomScheduleByUserIdAndTopic(userId,
                             foundTopic);
             if(existing == null)
-                return;
-            existing.setStatus(ScheduleStatus.INACTIVE);
-            dailyCustomScheduleRepository.save(existing);
+                return null;
+            if(existing.getStatus().equals(ScheduleStatus.ACTIVE))
+                existing.setStatus(ScheduleStatus.INACTIVE);
+            else
+                existing.setStatus(ScheduleStatus.ACTIVE);
+            return dailyCustomScheduleRepository.save(existing);
         }
         else if(schedule instanceof WeeklyCustomSchedule){
             WeeklyCustomSchedule existing = weeklyCustomScheduleRepository
-                    .findWeeklyCustomScheduleByUserIdAndTopic(scheduleDTO.getUserId(),
+                    .findWeeklyCustomScheduleByUserIdAndTopic(userId,
                             foundTopic);
-            if(existing != null)
-                return;
-            WeeklyCustomSchedule weeklyCustomSchedule = (WeeklyCustomSchedule) schedule;
-            existing.setStatus(ScheduleStatus.INACTIVE);
-            weeklyCustomScheduleRepository.save(weeklyCustomSchedule);
+            if(existing == null)
+                return null;
+            if(existing.getStatus().equals(ScheduleStatus.ACTIVE))
+                existing.setStatus(ScheduleStatus.INACTIVE);
+            else
+                existing.setStatus(ScheduleStatus.ACTIVE);
+            return weeklyCustomScheduleRepository.save(existing);
         }
         else if(schedule instanceof MonthlyCustomSchedule){
             MonthlyCustomSchedule existing = monthlyCustomScheduleRepository
-                    .findMonthlyCustomScheduleByUserIdAndTopic(scheduleDTO.getUserId(),
+                    .findMonthlyCustomScheduleByUserIdAndTopic(userId,
                             foundTopic);
-            if(existing != null)
-                return;
-            MonthlyCustomSchedule monthlyCustomSchedule = (MonthlyCustomSchedule) schedule;
-            existing.setStatus(ScheduleStatus.INACTIVE);
-            monthlyCustomScheduleRepository.save(monthlyCustomSchedule);
+            if(existing == null)
+                return null;
+            if(existing.getStatus().equals(ScheduleStatus.ACTIVE))
+                existing.setStatus(ScheduleStatus.INACTIVE);
+            else
+                existing.setStatus(ScheduleStatus.ACTIVE);
+            return monthlyCustomScheduleRepository.save(existing);
         }
         else {
             DefaultSchedule existing = defaultScheduleRepository
-                    .findDefaultScheduleByUserIdAndTopic(scheduleDTO.getUserId(), foundTopic);
-            if(existing != null)
-                return;
-            DefaultSchedule defaultSchedule = (DefaultSchedule) schedule;
-            existing.setStatus(ScheduleStatus.INACTIVE);
-            defaultScheduleRepository.save(defaultSchedule);
+                    .findDefaultScheduleByUserIdAndTopic(userId, foundTopic);
+            if(existing == null)
+                return null;
+            if(existing.getStatus().equals(ScheduleStatus.ACTIVE))
+                existing.setStatus(ScheduleStatus.INACTIVE);
+            else
+                existing.setStatus(ScheduleStatus.ACTIVE);
+            return defaultScheduleRepository.save(existing);
         }
     }
 
+    public void deleteSchedule(Long userId, String topic, String scheduleType){
+        SupportedTopics foundTopic = SupportedTopics.of(topic);
+        Schedule schedule = getScheduleInstanceFromUserIdAndTopic(userId, topic, scheduleType);
+        if(schedule instanceof DailyCustomSchedule){
+            DailyCustomSchedule existing = dailyCustomScheduleRepository
+                    .findDailyCustomScheduleByUserIdAndTopic(userId,
+                            foundTopic);
+            if(existing == null)
+                return;
+            dailyCustomScheduleRepository.delete(existing);
+        }
+        else if(schedule instanceof WeeklyCustomSchedule){
+            WeeklyCustomSchedule existing = weeklyCustomScheduleRepository
+                    .findWeeklyCustomScheduleByUserIdAndTopic(userId,
+                            foundTopic);
+            if(existing == null)
+                return;
+            weeklyCustomScheduleRepository.delete(existing);
+        }
+        else if(schedule instanceof MonthlyCustomSchedule){
+            MonthlyCustomSchedule existing = monthlyCustomScheduleRepository
+                    .findMonthlyCustomScheduleByUserIdAndTopic(userId,
+                            foundTopic);
+            if(existing == null)
+                return;
+            monthlyCustomScheduleRepository.delete(existing);
+        }
+        else {
+            DefaultSchedule existing = defaultScheduleRepository
+                    .findDefaultScheduleByUserIdAndTopic(userId, foundTopic);
+            if(existing == null)
+                return;
+            defaultScheduleRepository.delete(existing);
+        }
+    }
 
+    public Schedule getScheduleByUserIdAndTopic(Long userId, String topic){
+        SupportedTopics foundTopic = SupportedTopics.of(topic);
+        Schedule schedule = null;
+        schedule = defaultScheduleRepository
+                .findDefaultScheduleByUserIdAndTopic(userId,foundTopic);
+        if(schedule != null)
+            return schedule;
+        schedule = dailyCustomScheduleRepository
+                .findDailyCustomScheduleByUserIdAndTopic(userId, foundTopic);
+        if(schedule != null)
+            return schedule;
+        schedule = weeklyCustomScheduleRepository
+                .findWeeklyCustomScheduleByUserIdAndTopic(userId, foundTopic);
+        if(schedule != null)
+            return schedule;
+        schedule = monthlyCustomScheduleRepository
+                .findMonthlyCustomScheduleByUserIdAndTopic(userId, foundTopic);
+        return schedule;
+    }
+
+    public Map<String, List<? extends Schedule>> getAllUserSchedule(Long userId){
+        Map<String, List<? extends Schedule>> userSchedules = new HashMap<>();
+        userSchedules.put("default",  getUserDefaultSchedules(userId));
+        userSchedules.put("daily",  getUserDailyCustomSchedules(userId));
+        userSchedules.put("weekly",  getUserWeeklyCustomSchedules(userId));
+        userSchedules.put("monthly",  getUserMonthlyCustomSchedules(userId));
+
+        return userSchedules;
+    }
+
+    public List<DefaultSchedule> getUserDefaultSchedules(Long userId){
+        return defaultScheduleRepository.findDefaultSchedulesByUserId(userId);
+    }
+    public List<DailyCustomSchedule> getUserDailyCustomSchedules(Long userId){
+        return dailyCustomScheduleRepository.findDailyCustomSchedulesByUserId(userId);
+    }
+    public List<WeeklyCustomSchedule> getUserWeeklyCustomSchedules(Long userId){
+        return weeklyCustomScheduleRepository.findWeeklyCustomSchedulesByUserId(userId);
+    }
+    public List<MonthlyCustomSchedule> getUserMonthlyCustomSchedules(Long userId){
+        return monthlyCustomScheduleRepository.findMonthlyCustomSchedulesByUserId(userId);
+    }
+
+    private Schedule getScheduleInstanceFromUserIdAndTopic(
+            Long userId, String topic, String scheduleType){
+        ScheduleDTO scheduleDTO = ScheduleDTO.builder()
+                .userId(userId).topic(topic).scheduleType(scheduleType).build();
+        return getScheduleInstance(scheduleDTO);
+    }
 
     private Schedule getScheduleInstance(ScheduleDTO scheduleDTO){
+        String schedType = scheduleDTO.getScheduleType();
+        if(schedType == null || schedType.length() == 0)
+            scheduleDTO.setScheduleType(ScheduleType.DEFAULT.getValue());
         ScheduleType scheduleType = ScheduleType.of(scheduleDTO.getScheduleType());
         SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
         switch (scheduleType){

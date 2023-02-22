@@ -5,7 +5,10 @@ import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface WeeklyCustomScheduleRepository extends JpaRepository<WeeklyCustomSchedule, Long> {
     public WeeklyCustomSchedule findWeeklyCustomScheduleByUserIdAndTopic(Long userId, SupportedTopics topic);
+    public List<WeeklyCustomSchedule> findWeeklyCustomSchedulesByUserId(Long userId);
 }

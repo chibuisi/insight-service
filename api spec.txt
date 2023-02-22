@@ -66,10 +66,25 @@ subscription
 2. create converters for SupportedTopics, UnsubscribeReason
 Added unique constraint to topic name
 added static method (of) to enums
-
-Doing
 scheduler
 create scheduler for every topic
+schedule - save schedule, delete schedule, pause/unpause
+1.  delete schedule, pause/unpause
+1. get schedule by userId and topic - /schedule?userId=1&topic=motivation done
+2. get user schedule - /schedule/user (all, default, daily, weekly, monthly) schedule types
+
+
+Doing
+schedule
+3. get default schedules for user and topic - /schedule/user/topic/default?userId=1&topic=motivation
+4. get daily schedules for user and topic - /schedule/user/topic/daily?userId=1&topic=motivation
+5. get weekly schedules for user and topic - /schedule/user/topic/weekly?userId=1&topic=motivation
+6. get monthly schedules for user and topic - /schedule/user/topic/monthly?userId=1&topic=motivation*
+7. get all (default, daily, weekly, monthly) schedule for topic - /schedule/topic/{topicId}
+3. get default schedules for topic - /schedule/topic/{topicId}/default
+4. get daily schedules for topic - /schedule/topic/{topicId}/daily
+5. get weekly schedules for topic - /schedule/topic/{topicId}/weekly
+6. get monthly schedules for topic - /schedule/topic/{topicId}/monthly
 
 Challenges faced
 1. I could not get unique constraint working on the field title. I solved it by
