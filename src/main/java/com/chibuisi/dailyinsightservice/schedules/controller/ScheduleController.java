@@ -2,10 +2,10 @@ package com.chibuisi.dailyinsightservice.schedules.controller;
 
 import com.chibuisi.dailyinsightservice.schedules.model.ScheduleDTO;
 import com.chibuisi.dailyinsightservice.schedules.service.ScheduleService;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,10 +44,10 @@ public class ScheduleController {
 
     //get user schedule - (all, default, daily, weekly, monthly) types
     @GetMapping("/user")
-    public ResponseEntity getAllUserSchedule(@RequestParam Long userId,
+    public ResponseEntity getUserSchedule(@RequestParam Long userId,
                                              @RequestParam String scheduleType){
         if(scheduleType.equalsIgnoreCase("all"))
-            return new ResponseEntity(scheduleService.getAllUserSchedule(userId), HttpStatus.OK);
+            return new ResponseEntity(scheduleService.getUserAllSchedule(userId), HttpStatus.OK);
         else if(scheduleType.equalsIgnoreCase("default"))
             return new ResponseEntity(scheduleService.getUserDefaultSchedules(userId), HttpStatus.OK);
         else if(scheduleType.equalsIgnoreCase("daily"))
@@ -58,6 +58,60 @@ public class ScheduleController {
             return new ResponseEntity(scheduleService.getUserMonthlyCustomSchedules(userId), HttpStatus.OK);
         else
             return new ResponseEntity("Invalid Schedule Type", HttpStatus.OK);
+    }
+
+    //get schedules for user and topic - (all, default, daily, weekly, monthly) types
+    @GetMapping("/user/topic")
+    public ResponseEntity getUserTopicSchedule(@RequestParam Long userId,
+                                                  @RequestParam String topic,
+                                                  @RequestParam String scheduleType){
+        SupportedTopics supportedTopic = SupportedTopics.of(topic);
+        if(scheduleType.equalsIgnoreCase("all"))
+            return new ResponseEntity(scheduleService.getUserAllScheduleByTopic(userId, supportedTopic),
+                    HttpStatus.OK);
+        if(scheduleType.equalsIgnoreCase("default"))
+            return new ResponseEntity(scheduleService.getUserDefaultSchedulesByTopic(userId, supportedTopic),
+                    HttpStatus.OK);
+        else if(scheduleType.equalsIgnoreCase("daily"))
+            return new ResponseEntity(scheduleService.getUserDailyCustomSchedulesByTopic(userId, supportedTopic),
+                    HttpStatus.OK);
+        else if(scheduleType.equalsIgnoreCase("weekly"))
+            return new ResponseEntity(scheduleService.getUserWeeklyCustomSchedulesByTopic(userId, supportedTopic),
+                    HttpStatus.OK);
+        else if(scheduleType.equalsIgnoreCase("monthly"))
+            return new ResponseEntity(scheduleService.getUserMonthlyCustomSchedulesByTopic(userId, supportedTopic),
+                    HttpStatus.OK);
+        else
+            return null;
+    }
+
+    //get schedules for topic - (all, default, daily, weekly, monthly) types
+    @GetMapping("/topic")
+    public ResponseEntity getTopicSchedule(@RequestParam String topic,
+                                           @RequestParam String scheduleType){
+        SupportedTopics supportedTopic = SupportedTopics.of(topic);
+        if(scheduleType.equalsIgnoreCase("all"))
+            return new ResponseEntity(scheduleService
+                    .getTopicAllSchedule(supportedTopic),
+                    HttpStatus.OK);
+        if(scheduleType.equalsIgnoreCase("default"))
+            return new ResponseEntity(scheduleService
+                    .getTopicDefaultSchedules(supportedTopic),
+                    HttpStatus.OK);
+        else if(scheduleType.equalsIgnoreCase("daily"))
+            return new ResponseEntity(scheduleService
+                    .getTopicDailyCustomSchedules(supportedTopic),
+                    HttpStatus.OK);
+        else if(scheduleType.equalsIgnoreCase("weekly"))
+            return new ResponseEntity(scheduleService
+                    .getTopicWeeklyCustomSchedules(supportedTopic),
+                    HttpStatus.OK);
+        else if(scheduleType.equalsIgnoreCase("monthly"))
+            return new ResponseEntity(scheduleService
+                    .getTopicMonthlyCustomSchedules(supportedTopic),
+                    HttpStatus.OK);
+        else
+            return null;
     }
 
 }

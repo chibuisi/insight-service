@@ -9,7 +9,6 @@ import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,7 +177,7 @@ public class ScheduleService {
         return schedule;
     }
 
-    public Map<String, List<? extends Schedule>> getAllUserSchedule(Long userId){
+    public Map<String, List<? extends Schedule>> getUserAllSchedule(Long userId){
         Map<String, List<? extends Schedule>> userSchedules = new HashMap<>();
         userSchedules.put("default",  getUserDefaultSchedules(userId));
         userSchedules.put("daily",  getUserDailyCustomSchedules(userId));
@@ -187,7 +186,6 @@ public class ScheduleService {
 
         return userSchedules;
     }
-
     public List<DefaultSchedule> getUserDefaultSchedules(Long userId){
         return defaultScheduleRepository.findDefaultSchedulesByUserId(userId);
     }
@@ -199,6 +197,46 @@ public class ScheduleService {
     }
     public List<MonthlyCustomSchedule> getUserMonthlyCustomSchedules(Long userId){
         return monthlyCustomScheduleRepository.findMonthlyCustomSchedulesByUserId(userId);
+    }
+    public List<DefaultSchedule> getUserDefaultSchedulesByTopic(Long userId, SupportedTopics topic){
+        return defaultScheduleRepository.findDefaultSchedulesByUserIdAndTopic(userId, topic);
+    }
+    public List<DailyCustomSchedule> getUserDailyCustomSchedulesByTopic(Long userId, SupportedTopics topic){
+        return dailyCustomScheduleRepository.findDailySchedulesByUserIdAndTopic(userId, topic);
+    }
+    public List<WeeklyCustomSchedule> getUserWeeklyCustomSchedulesByTopic(Long userId, SupportedTopics topic){
+        return weeklyCustomScheduleRepository.findWeeklySchedulesByUserIdAndTopic(userId, topic);
+    }
+    public List<MonthlyCustomSchedule> getUserMonthlyCustomSchedulesByTopic(Long userId, SupportedTopics topic){
+        return monthlyCustomScheduleRepository.findMonthlySchedulesByUserIdAndTopic(userId, topic);
+    }
+    public Map<String, List<? extends Schedule>> getUserAllScheduleByTopic(Long userId, SupportedTopics topic){
+        Map<String, List<? extends Schedule>> userSchedules = new HashMap<>();
+        userSchedules.put("default", getUserDefaultSchedulesByTopic(userId, topic));
+        userSchedules.put("daily", getUserDailyCustomSchedulesByTopic(userId, topic));
+        userSchedules.put("weekly", getUserWeeklyCustomSchedulesByTopic(userId, topic));
+        userSchedules.put("monthly", getUserMonthlyCustomSchedulesByTopic(userId, topic));
+        return userSchedules;
+    }
+    public List<DefaultSchedule> getTopicDefaultSchedules(SupportedTopics topic){
+        return defaultScheduleRepository.findDefaultCustomSchedulesByTopic(topic);
+    }
+    public List<DailyCustomSchedule> getTopicDailyCustomSchedules(SupportedTopics topic){
+        return dailyCustomScheduleRepository.findDailyCustomSchedulesByTopic(topic);
+    }
+    public List<WeeklyCustomSchedule> getTopicWeeklyCustomSchedules(SupportedTopics topic){
+        return weeklyCustomScheduleRepository.findWeeklyCustomSchedulesByTopic(topic);
+    }
+    public List<MonthlyCustomSchedule> getTopicMonthlyCustomSchedules(SupportedTopics topic){
+        return monthlyCustomScheduleRepository.findMonthlyCustomSchedulesByTopic(topic);
+    }
+    public Map<String, List<? extends Schedule>> getTopicAllSchedule(SupportedTopics topic){
+        Map<String, List<? extends Schedule>> userSchedules = new HashMap<>();
+        userSchedules.put("default", getTopicDefaultSchedules(topic));
+        userSchedules.put("daily", getTopicDailyCustomSchedules(topic));
+        userSchedules.put("weekly", getTopicWeeklyCustomSchedules(topic));
+        userSchedules.put("monthly", getTopicMonthlyCustomSchedules(topic));
+        return userSchedules;
     }
 
     private Schedule getScheduleInstanceFromUserIdAndTopic(
