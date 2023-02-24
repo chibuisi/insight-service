@@ -1,16 +1,14 @@
-package com.chibuisi.dailyinsightservice.schedules.model;
+package com.chibuisi.dailyinsightservice.schedules.model.enums;
 
 import java.util.stream.Stream;
 
-public enum ScheduleType {
-    DEFAULT("default"),
-    DAILY("daily"),
-    WEEKLY("weekly"),
-    MONTHLY("monthly");
+public enum ReadyScheduleStatus {
+    UNSENT("unsent"),
+    SENT("sent");
 
     private String value;
 
-    private ScheduleType(String value){
+    private ReadyScheduleStatus(String value){
         this.value = value;
     }
 
@@ -23,8 +21,8 @@ public enum ScheduleType {
         return this.value;
     }
 
-    public static ScheduleType of(String name){
-        return Stream.of(ScheduleType.values())
+    public static ReadyScheduleStatus of(String name){
+        return Stream.of(ReadyScheduleStatus.values())
                 .filter(s -> s.getValue().equalsIgnoreCase(name)).findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }

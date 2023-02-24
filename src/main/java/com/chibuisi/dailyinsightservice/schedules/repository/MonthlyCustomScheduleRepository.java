@@ -9,8 +9,9 @@ import java.util.List;
 
 @Repository
 public interface MonthlyCustomScheduleRepository extends JpaRepository<MonthlyCustomSchedule, Long> {
-    public MonthlyCustomSchedule findMonthlyCustomScheduleByUserIdAndTopic(Long userId, SupportedTopics topic);
+    public List<MonthlyCustomSchedule> findMonthlyCustomScheduleByUserIdAndTopic(Long userId, SupportedTopics topic);
     public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByUserId(Long userId);
     public List<MonthlyCustomSchedule> findMonthlySchedulesByUserIdAndTopic(Long userId, SupportedTopics topic);
     public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByTopic(SupportedTopics topic);
+    public void deleteAllByUserIdAndTopic(Long userId, SupportedTopics topic);
 }

@@ -23,9 +23,11 @@ UserService - manage users
 UserSubscriptionService - manage user subcriptions
 TopicService - manage all areas we cover (food, languages, technology, life, cultures, motivations, cryptocurrencies)
 SchedulerService - periodically retrieve all due items. process and queue. Update next due
+ScheduleService - customize schedule
+QueueSystem (PubSubEmulator)
 ProcessorService - asynchronously dequeue messages, create velocity templates and pass to mail service
-MailService - asynschonously send out emails(newsletter, motivational quotes)
-NotificationService - users can configure how to recieve newsletters.
+MailService - asynchronously send out emails(newsletter, motivational quotes)
+//NotificationService - users can configure how to recieve newsletters.
 PaymentService - manage users payment
 
 
@@ -68,15 +70,19 @@ Added unique constraint to topic name
 added static method (of) to enums
 scheduler
 create scheduler for every topic
-schedule - save schedule, delete schedule, pause/unpause
+schedule - save schedule (default, weekly), delete schedule, pause/unpause,
 1.  delete schedule, pause/unpause
 1. get schedule by userId and topic - /schedule?userId=1&topic=motivation done
 2. get user schedule - /schedule/user (all, default, daily, weekly, monthly) schedule types
 2. get schedules for user and topic - /schedule/user/topic?userId=1&topic=motivation&scheduleType=all
 3. get schedules for topic - /schedule/topic?topic=motivation&scheduleType=all
+ready schedule table
 
 Doing
-schedulers
+save (monthly, daily) schedule
+schedules - scheduler reads hourly database table and puts on queue and readySchedule table
+queue
+if a user unsubscribe then deactivate/remove all schedules
 
 Challenges faced
 1. I could not get unique constraint working on the field title. I solved it by

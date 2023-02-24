@@ -1,7 +1,7 @@
 package com.chibuisi.dailyinsightservice.schedules.model;
 
+import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

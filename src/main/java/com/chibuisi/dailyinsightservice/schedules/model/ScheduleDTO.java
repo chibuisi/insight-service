@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,6 +19,8 @@ public class ScheduleDTO {
     private String timezone;
     private String scheduleType;
     private Integer frequency;
+    private List<String> scheduleDays;
+    private List<String> scheduleMonths;
 
     public static DefaultSchedule createDefaultSchedule(ScheduleDTO scheduleDTO){
         DefaultSchedule defaultSchedule = DefaultSchedule.builder()

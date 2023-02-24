@@ -1,5 +1,7 @@
 package com.chibuisi.dailyinsightservice.usersubscription.service.impl;
 
+import com.chibuisi.dailyinsightservice.schedules.model.ScheduleDTO;
+import com.chibuisi.dailyinsightservice.schedules.service.ScheduleService;
 import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import com.chibuisi.dailyinsightservice.user.model.User;
 import com.chibuisi.dailyinsightservice.user.service.UserService;
@@ -24,37 +26,38 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private SubscriptionRepository subscriptionRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ScheduleService scheduleService;
 
     @Override
     public Subscription subscribe(Subscription subscription) {
+        User user = userService.getUserByEmail(subscription.getEmail());
+        SupportedTopics supportedTopics = SupportedTopics.of(subscription.getTopic());
+        if(user == null){
+            user = User.builder().dateJoined(LocalDateTime.now())
+                    .email(subscription.getEmail()).build();
+            user = userService.saveUser(user);
+        }
+        ScheduleDTO scheduleDTO = ScheduleDTO.builder()
+                .userId(user.getId()).topic(supportedTopics.getName()).build();
         Subscription existing = subscriptionRepository
                 .findByEmailAndTopic(subscription.getEmail(), subscription.getTopic());
         if(existing == null){
-            User user = userService.getUserByEmail(subscription.getEmail());
-            if(user == null){
-                user = User.builder().dateJoined(LocalDateTime.now())
-                        .email(subscription.getEmail()).build();
-                user = userService.saveUser(user);
-            }
             LocalDateTime date = LocalDateTime.now();
             subscription.setDateSubscribed(date);
             subscription.setDateUpdated(date);
             subscription.setUserId(user.getId());
             subscription.setStatus(SubscriptionStatus.ACTIVE);
-            Optional<SupportedTopics> supTopic = Arrays.stream(SupportedTopics.values())
-                    .filter(e -> e.getName().equalsIgnoreCase(subscription.getTopic()))
-                    .findFirst();
-            if(supTopic.isPresent()){
-                subscription.setTopic(supTopic.get().getName());
-                subscription.setSupportedTopic(supTopic.get());
-                return subscriptionRepository.save(subscription);
-            }
+            subscription.setTopic(supportedTopics.getName());
+            subscription.setSupportedTopic(supportedTopics);
+            scheduleService.saveSchedule(scheduleDTO);
+            return subscriptionRepository.save(subscription);
         }
         else{
+            scheduleService.saveSchedule(scheduleDTO);
             return updateSubscription(SubscriptionRequestDto.builder().email(subscription.getEmail())
                             .status("active").topic(subscription.getTopic()).build());
         }
-        return null;
     }
 
     @Override
@@ -62,16 +65,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription existing = subscriptionRepository
                 .findByEmailAndTopic(email, topic);
         if(existing != null){
-            Optional<UnsubscribeReason> unsubReasonOpt = Arrays.stream(UnsubscribeReason.values())
-                    .filter(e -> e.getName().equalsIgnoreCase(reason))
-                    .findFirst();
-            if(!unsubReasonOpt.isPresent()){
-                existing.setUnsubscribeReason(UnsubscribeReason.UNKNOWN);
-            }
-            else existing.setUnsubscribeReason(unsubReasonOpt.get());
+            UnsubscribeReason unsubscribeReason = UnsubscribeReason.of(reason);
+            existing.setUnsubscribeReason(unsubscribeReason);
             existing.setStatus(SubscriptionStatus.INACTIVE);
             existing.setDateUnsubscribed(LocalDateTime.now());
             subscriptionRepository.save(existing);
+            scheduleService.deleteAllScheduleForUser(existing.getUserId(), topic);
         }
     }
 
