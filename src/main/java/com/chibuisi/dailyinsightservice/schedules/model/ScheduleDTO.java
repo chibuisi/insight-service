@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,12 +13,12 @@ import java.util.List;
 public class ScheduleDTO {
     private Long userId;
     private String topic;
-    private String time;
+    private Integer time;
     private String timezone;
     private String scheduleType;
     private Integer frequency;
-    private List<String> scheduleDays;
-    private List<String> scheduleMonths;
+    private String scheduleDay;
+    private Integer monthDay;
 
     public static DefaultSchedule createDefaultSchedule(ScheduleDTO scheduleDTO){
         DefaultSchedule defaultSchedule = DefaultSchedule.builder()
@@ -37,6 +35,8 @@ public class ScheduleDTO {
                 .userId(scheduleDTO.getUserId())
                 .topic(SupportedTopics.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
+                .frequency(scheduleDTO.getFrequency())
+                .frequencyCounter(scheduleDTO.getFrequency())
                 .time(scheduleDTO.getTime())
                 .build();
         return dailyCustomSchedule;
@@ -66,5 +66,12 @@ public class ScheduleDTO {
                 .frequencyCounter(scheduleDTO.getFrequency())
                 .build();
         return monthlyCustomSchedule;
+    }
+
+    public static Integer getValidMonthDay(ScheduleDTO scheduleDTO){
+        Integer monthDay = scheduleDTO.getMonthDay();
+        if(monthDay == null || monthDay < 1 || monthDay > 31)
+            throw new IllegalArgumentException("Month day is between 1 and 31");
+        return monthDay;
     }
 }

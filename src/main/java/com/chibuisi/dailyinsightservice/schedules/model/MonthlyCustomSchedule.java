@@ -23,9 +23,10 @@ public class MonthlyCustomSchedule extends Schedule {
     private Long id;
     private Long userId;
     private SupportedTopics topic;
-    private String time;
+    private Integer time;
     private String timezone;
     private Integer frequency;
     private Integer frequencyCounter;
     private ScheduleStatus status;
+    private Integer day;
 }

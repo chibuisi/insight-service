@@ -23,7 +23,9 @@ public class DailyCustomSchedule extends Schedule {
     private Long id;
     private Long userId;
     private SupportedTopics topic;
-    private String time;
+    private Integer time;
     private String timezone;
     private ScheduleStatus status;
+    private Integer frequency;
+    private Integer frequencyCounter;
 }

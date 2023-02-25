@@ -70,16 +70,16 @@ Added unique constraint to topic name
 added static method (of) to enums
 scheduler
 create scheduler for every topic
-schedule - save schedule (default, weekly), delete schedule, pause/unpause,
+schedule - save schedule (default, weekly, monthly, daily), delete schedule, pause/unpause,
 1.  delete schedule, pause/unpause
 1. get schedule by userId and topic - /schedule?userId=1&topic=motivation done
 2. get user schedule - /schedule/user (all, default, daily, weekly, monthly) schedule types
 2. get schedules for user and topic - /schedule/user/topic?userId=1&topic=motivation&scheduleType=all
 3. get schedules for topic - /schedule/topic?topic=motivation&scheduleType=all
 ready schedule table
+Note: you update a schedule. You delete it and add a new one.
 
 Doing
-save (monthly, daily) schedule
 schedules - scheduler reads hourly database table and puts on queue and readySchedule table
 queue
 if a user unsubscribe then deactivate/remove all schedules
@@ -116,3 +116,11 @@ every Friday at 11:00 PM.
     @Schedule(dayOfWeek="Fri", hour="23")
 })
 public void doPeriodicCleanup() { ... }
+
+//to include a ready schedule
+if freqCounter > 1
+    remove from ready list, reduce to -1 and update in db
+
+//to update freqCounter
+if freq != freqCounter
+    freCounter = freq

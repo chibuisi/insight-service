@@ -28,7 +28,7 @@ public class WeeklyCustomSchedule extends Schedule {
     private Integer frequency;
     private Integer frequencyCounter;
     private ScheduleDay scheduleDay;
-    private String time;
+    private Integer time;
     private String timezone;
     private ScheduleStatus status;
 }

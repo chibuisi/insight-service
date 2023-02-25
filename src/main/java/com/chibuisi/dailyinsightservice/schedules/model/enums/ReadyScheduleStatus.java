@@ -4,7 +4,8 @@ import java.util.stream.Stream;
 
 public enum ReadyScheduleStatus {
     UNSENT("unsent"),
-    SENT("sent");
+    SENT("sent"),
+    PROCESSED("processed");
 
     private String value;
 

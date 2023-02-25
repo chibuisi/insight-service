@@ -33,4 +33,8 @@ public class ReadyScheduleService {
         return readyScheduleRepository.findAllById(ids);
     }
 
+    public void cleanUpAllTableData(){
+        readyScheduleRepository.deleteAll();
+    }
+
 }
