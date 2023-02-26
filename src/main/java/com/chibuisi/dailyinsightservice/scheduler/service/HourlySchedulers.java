@@ -1,7 +1,6 @@
 package com.chibuisi.dailyinsightservice.scheduler.service;
 
-import com.chibuisi.dailyinsightservice.schedules.model.DailyCustomSchedule;
-import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
+import com.chibuisi.dailyinsightservice.schedules.model.*;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ReadyScheduleStatus;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleType;
 import com.chibuisi.dailyinsightservice.schedules.service.ReadyScheduleService;
@@ -11,9 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 public class HourlySchedulers {
@@ -22,52 +22,75 @@ public class HourlySchedulers {
     @Autowired
     private ScheduleService scheduleService;
 
+    private String timezone = "MST";
+
     @Scheduled(cron = "0 0 6 * * *")//every six am
-    public void everyHourForDefaultTableScheduler(){
+    public void everySixAMForDefaultTableScheduler(){
         System.out.println("everyHourForDefaultTableScheduler");
+        List<DefaultSchedule> defaultSchedules =
+                scheduleService.getActiveDefaultSchedules();
+        List<ReadySchedule> readySchedules = new ArrayList<>();
+        defaultSchedules.forEach(e -> {
+            ReadySchedule readySchedule = ReadySchedule.builder()
+                    .time(6).scheduleType(ScheduleType.DAILY)
+                    .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
+                    .topic(e.getTopic()).userId(e.getUserId()).build();
+            readySchedules.add(readySchedule);
+        });
+        scheduleService.saveDefaultSchedules(defaultSchedules);
     }
     @Scheduled(cron = "0 0 * * * *")//every hour
     public void everyHourForDailyTableScheduler(){
         System.out.println("everyHourForDailyTableScheduler");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
         List<DailyCustomSchedule> dailyCustomSchedules =
-                scheduleService.getActiveDailyCustomSchedules();
-        //get > 1 frequencies
-        List<DailyCustomSchedule> unreadySchedulesForComingDays = dailyCustomSchedules
-                .stream().filter(e -> e.getFrequencyCounter() > 1).collect(Collectors.toList());
-        dailyCustomSchedules.removeIf(dailyCustomSchedule -> unreadySchedulesForComingDays.contains(dailyCustomSchedule));
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Integer hour = localDateTime.getHour();
-        dailyCustomSchedules.stream().filter(e -> e.getTime() == hour);
+                scheduleService.getActiveDailyCustomSchedules(zonedDateTime.getHour());
+        System.out.println(dailyCustomSchedules);
         //transform as ready schedules
         List<ReadySchedule> readySchedules = new ArrayList<>();
         dailyCustomSchedules.forEach(e -> {
             ReadySchedule readySchedule = ReadySchedule.builder()
-                    .time(hour).scheduleType(ScheduleType.DAILY)
+                    .time(e.getTime()).scheduleType(ScheduleType.DAILY)
                     .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
                     .topic(e.getTopic()).userId(e.getUserId()).build();
             readySchedules.add(readySchedule);
         });
         readyScheduleService.saveReadySchedules(readySchedules);
-        //reduce by 1
-        unreadySchedulesForComingDays.forEach(e -> e.setFrequencyCounter(e.getFrequencyCounter()-1));
-        dailyCustomSchedules.forEach(e -> {
-            if(e.getFrequency() > e.getFrequencyCounter())
-                e.setFrequencyCounter(e.getFrequency());
-        });
-        scheduleService.saveDailySchedules(unreadySchedulesForComingDays);
-        scheduleService.saveDailySchedules(dailyCustomSchedules);
     }
-
     @Scheduled(cron = "0 0 * * * *")//every hour
     public void everyHourForWeeklyTableScheduler(){
         System.out.println("everyHourForWeeklyTableScheduler");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
+        List<WeeklyCustomSchedule> weeklyCustomSchedules =
+                scheduleService.getActiveWeeklyCustomSchedules(zonedDateTime.getHour());
+        List<ReadySchedule> readySchedules = new ArrayList<>();
+        weeklyCustomSchedules.forEach(e -> {
+            ReadySchedule readySchedule = ReadySchedule.builder()
+                    .time(e.getTime()).scheduleType(ScheduleType.DAILY)
+                    .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
+                    .topic(e.getTopic()).userId(e.getUserId()).build();
+            readySchedules.add(readySchedule);
+        });
+        scheduleService.saveWeeklySchedules(weeklyCustomSchedules);
     }
     @Scheduled(cron = "0 0 * * * *")//every hour
     public void everyHourForMonthlyTableScheduler(){
         System.out.println("everyHourForMonthlyTableScheduler");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
+        List<MonthlyCustomSchedule> monthlyCustomSchedules =
+                scheduleService.getActiveMonthlyCustomSchedules(zonedDateTime.getHour());
+        List<ReadySchedule> readySchedules = new ArrayList<>();
+        monthlyCustomSchedules.forEach(e -> {
+            ReadySchedule readySchedule = ReadySchedule.builder()
+                    .time(e.getTime()).scheduleType(ScheduleType.DAILY)
+                    .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
+                    .topic(e.getTopic()).userId(e.getUserId()).build();
+            readySchedules.add(readySchedule);
+        });
+        scheduleService.saveMonthlySchedules(monthlyCustomSchedules);
     }
 
-    @Scheduled(cron = "0 0/30 * * * *")//every 30 minutes
+    @Scheduled(cron = "0 */30 * * * *")//every 30 minutes
     public void temporaryCleanUpReadySchedules(){
         System.out.println("Clean Up Schedule");
         readyScheduleService.cleanUpAllTableData();

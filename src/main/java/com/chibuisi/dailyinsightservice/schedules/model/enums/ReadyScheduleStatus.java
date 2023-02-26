@@ -3,9 +3,9 @@ package com.chibuisi.dailyinsightservice.schedules.model.enums;
 import java.util.stream.Stream;
 
 public enum ReadyScheduleStatus {
-    UNSENT("unsent"),
+    PROCESSED("processed"),
     SENT("sent"),
-    PROCESSED("processed");
+    UNSENT("unsent");
 
     private String value;
 

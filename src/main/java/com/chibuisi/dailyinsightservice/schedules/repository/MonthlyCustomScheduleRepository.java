@@ -17,5 +17,6 @@ public interface MonthlyCustomScheduleRepository extends JpaRepository<MonthlyCu
     public List<MonthlyCustomSchedule> findMonthlySchedulesByUserIdAndTopic(Long userId, SupportedTopics topic);
     public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByTopic(SupportedTopics topic);
     public void deleteAllByUserIdAndTopic(Long userId, SupportedTopics topic);
-    public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByStatus(ScheduleStatus scheduleStatus);
+    public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
+            ScheduleStatus scheduleStatus, Integer time, Integer freq);
 }

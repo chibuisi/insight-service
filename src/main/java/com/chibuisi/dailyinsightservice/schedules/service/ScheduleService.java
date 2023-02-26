@@ -323,14 +323,20 @@ public class ScheduleService {
         }
     }
 
-    public List<DailyCustomSchedule> getActiveDailyCustomSchedules(){
-        return dailyCustomScheduleRepository.findDailyCustomSchedulesByStatus(ScheduleStatus.ACTIVE);
+    public List<DailyCustomSchedule> getActiveDailyCustomSchedules(Integer time){
+        return dailyCustomScheduleRepository
+                .findDailyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
+                        ScheduleStatus.ACTIVE, time, 1);
     }
-    public List<WeeklyCustomSchedule> getActiveWeeklyCustomSchedules(){
-        return weeklyCustomScheduleRepository.findWeeklyCustomSchedulesByStatus(ScheduleStatus.ACTIVE);
+    public List<WeeklyCustomSchedule> getActiveWeeklyCustomSchedules(Integer time){
+        return weeklyCustomScheduleRepository.
+                findWeeklyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
+                        ScheduleStatus.ACTIVE, time, 1);
     }
-    public List<MonthlyCustomSchedule> getActiveMonthlyCustomSchedules(){
-        return monthlyCustomScheduleRepository.findMonthlyCustomSchedulesByStatus(ScheduleStatus.ACTIVE);
+    public List<MonthlyCustomSchedule> getActiveMonthlyCustomSchedules(Integer time){
+        return monthlyCustomScheduleRepository
+                .findMonthlyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
+                        ScheduleStatus.ACTIVE, time, 1);
     }
     public List<DefaultSchedule> getActiveDefaultSchedules(){
         return defaultScheduleRepository.findDefaultSchedulesByStatus(ScheduleStatus.ACTIVE);

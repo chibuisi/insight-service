@@ -17,5 +17,6 @@ public interface DailyCustomScheduleRepository extends JpaRepository<DailyCustom
     public List<DailyCustomSchedule> findDailySchedulesByUserIdAndTopic(Long userId, SupportedTopics topic);
     public List<DailyCustomSchedule> findDailyCustomSchedulesByTopic(SupportedTopics topic);
     public void deleteAllByUserIdAndTopic(Long userId, SupportedTopics topic);
-    public List<DailyCustomSchedule> findDailyCustomSchedulesByStatus(ScheduleStatus scheduleStatus);
+    public List<DailyCustomSchedule> findDailyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
+            ScheduleStatus scheduleStatus, Integer time, Integer freq);
 }

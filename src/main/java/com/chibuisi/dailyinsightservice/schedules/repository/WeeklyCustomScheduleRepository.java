@@ -18,5 +18,7 @@ public interface WeeklyCustomScheduleRepository extends JpaRepository<WeeklyCust
     public List<WeeklyCustomSchedule> findWeeklySchedulesByUserIdAndTopic(Long userId, SupportedTopics topic);
     public List<WeeklyCustomSchedule> findWeeklyCustomSchedulesByTopic(SupportedTopics topic);
     public void deleteAllByUserIdAndTopic(Long userId, SupportedTopics topic);
-    public List<WeeklyCustomSchedule> findWeeklyCustomSchedulesByStatus(ScheduleStatus scheduleStatus);
+    public List<WeeklyCustomSchedule>
+    findWeeklyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
+            ScheduleStatus scheduleStatus, Integer time, Integer freq);
 }

@@ -15,5 +15,6 @@ public interface DefaultScheduleRepository extends JpaRepository<DefaultSchedule
     public List<DefaultSchedule> findDefaultSchedulesByUserIdAndTopic(Long userId, SupportedTopics topic);
     public List<DefaultSchedule> findDefaultCustomSchedulesByTopic(SupportedTopics topic);
     public void deleteAllByUserIdAndTopic(Long userId, SupportedTopics topic);
-    public List<DefaultSchedule> findDefaultSchedulesByStatus(ScheduleStatus scheduleStatus);
+    public List<DefaultSchedule>
+    findDefaultSchedulesByStatus(ScheduleStatus scheduleStatus);
 }
