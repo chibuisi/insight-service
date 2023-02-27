@@ -35,8 +35,8 @@ public class ScheduleDTO {
                 .userId(scheduleDTO.getUserId())
                 .topic(SupportedTopics.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
-                .frequency(scheduleDTO.getFrequency())
-                .frequencyCounter(scheduleDTO.getFrequency())
+                .frequency(getValidMonthDay(scheduleDTO))
+                .frequencyCounter(getValidMonthDay(scheduleDTO))
                 .time(scheduleDTO.getTime())
                 .build();
         return dailyCustomSchedule;
@@ -49,8 +49,8 @@ public class ScheduleDTO {
                 .topic(SupportedTopics.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
                 .time(scheduleDTO.getTime())
-                .frequency(scheduleDTO.getFrequency())
-                .frequencyCounter(scheduleDTO.getFrequency())
+                .frequency(getValidWeeklyFrequency(scheduleDTO.getFrequency()))
+                .frequencyCounter(getValidWeeklyFrequency(scheduleDTO.getFrequency()))
                 .build();
         return weeklyCustomSchedule;
     }
@@ -62,10 +62,21 @@ public class ScheduleDTO {
                 .topic(SupportedTopics.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
                 .time(scheduleDTO.getTime())
-                .frequency(scheduleDTO.getFrequency())
-                .frequencyCounter(scheduleDTO.getFrequency())
+                .frequency(getValidMonthlyFrequency(scheduleDTO.getFrequency()))
+                .frequencyCounter(getValidMonthlyFrequency(scheduleDTO.getFrequency()))
                 .build();
         return monthlyCustomSchedule;
+    }
+
+    public static Integer getValidWeeklyFrequency(Integer value){
+        if(value == null || value < 1 || value > 4)
+            throw new IllegalArgumentException("Weekly Interval is between 1 and 4");
+        return value;
+    }
+    public static Integer getValidMonthlyFrequency(Integer value){
+        if(value == null || value < 1 || value > 12)
+            throw new IllegalArgumentException("Monthly Interval is between 1 and 12");
+        return value;
     }
 
     public static Integer getValidMonthDay(ScheduleDTO scheduleDTO){

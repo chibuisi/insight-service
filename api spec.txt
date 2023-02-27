@@ -69,7 +69,7 @@ subscription
 Added unique constraint to topic name
 added static method (of) to enums
 scheduler
-create scheduler for every topic
+create scheduler for every topic - not done.
 schedule - save schedule (default, weekly, monthly, daily), delete schedule, pause/unpause,
 1.  delete schedule, pause/unpause
 1. get schedule by userId and topic - /schedule?userId=1&topic=motivation done
@@ -78,14 +78,19 @@ schedule - save schedule (default, weekly, monthly, daily), delete schedule, pau
 3. get schedules for topic - /schedule/topic?topic=motivation&scheduleType=all
 ready schedule table
 hourly for daily,weekly,monthly,default schedules
-Note: you update a schedule. You delete it and add a new one.
+Note: you dont update a schedule. You delete it and add a new one.
+weekly schedule frequency is min 1 and max 4. Otherwise advice to use monthly
+monthly schedule frequency is min 1 and max 12. Otherwise advice we dont support.
+every midnight scheduler --done
+if a user unsubscribe then deactivate/remove all schedules --done
+schedules - scheduler reads hourly database table and puts on readySchedule table and tries to update
+frequency counter to original if required.
 
 Doing
-every midnight scheduler
 convert every timezone to system timezone before saving time
 schedules - scheduler reads hourly database table and puts on queue and readySchedule table
 queue
-if a user unsubscribe then deactivate/remove all schedules
+
 
 Challenges faced
 1. I could not get unique constraint working on the field title. I solved it by

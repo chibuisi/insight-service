@@ -54,8 +54,12 @@ public class HourlySchedulers {
                     .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
                     .topic(e.getTopic()).userId(e.getUserId()).build();
             readySchedules.add(readySchedule);
+            if(e.getFrequency() > e.getFrequencyCounter()){
+                e.setFrequencyCounter(e.getFrequency());
+            }
         });
         readyScheduleService.saveReadySchedules(readySchedules);
+        scheduleService.saveDailySchedules(dailyCustomSchedules);
     }
     @Scheduled(cron = "0 0 * * * *")//every hour
     public void everyHourForWeeklyTableScheduler(){
@@ -70,7 +74,11 @@ public class HourlySchedulers {
                     .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
                     .topic(e.getTopic()).userId(e.getUserId()).build();
             readySchedules.add(readySchedule);
+            if(e.getFrequency() > e.getFrequencyCounter()){
+                e.setFrequencyCounter(e.getFrequency());
+            }
         });
+        readyScheduleService.saveReadySchedules(readySchedules);
         scheduleService.saveWeeklySchedules(weeklyCustomSchedules);
     }
     @Scheduled(cron = "0 0 * * * *")//every hour
@@ -86,11 +94,15 @@ public class HourlySchedulers {
                     .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
                     .topic(e.getTopic()).userId(e.getUserId()).build();
             readySchedules.add(readySchedule);
+            if(e.getFrequency() > e.getFrequencyCounter()){
+                e.setFrequencyCounter(e.getFrequency());
+            }
         });
+        readyScheduleService.saveReadySchedules(readySchedules);
         scheduleService.saveMonthlySchedules(monthlyCustomSchedules);
     }
 
-    @Scheduled(cron = "0 */30 * * * *")//every 30 minutes
+    //@Scheduled(cron = "0 */30 * * * *")//every 30 minutes
     public void temporaryCleanUpReadySchedules(){
         System.out.println("Clean Up Schedule");
         readyScheduleService.cleanUpAllTableData();

@@ -342,6 +342,22 @@ public class ScheduleService {
         return defaultScheduleRepository.findDefaultSchedulesByStatus(ScheduleStatus.ACTIVE);
     }
 
+    public Integer updateWeeklyCustomScheduleTable(Integer frequencyCounter){
+        Integer sum = 0;
+        sum += weeklyCustomScheduleRepository.updateFrequencyCounter(2,2-1);
+        sum += weeklyCustomScheduleRepository.updateFrequencyCounter(3,3-1);
+        sum += weeklyCustomScheduleRepository.updateFrequencyCounter(4,4-1);
+        return sum;
+    }
+
+    public Integer updateMonthlyCustomScheduleTable(Integer frequencyCounter){
+        Integer sum = 0;
+        for (int i = 2; i <= 12; i++){
+            sum+=monthlyCustomScheduleRepository.updateFrequencyCounter(i, i-1);
+        }
+        return sum;
+    }
+
     /*private List<Schedule> saveWeeklySchedules(){
         List<ScheduleDay> scheduleDays = ScheduleDay.of(scheduleDTO.getScheduleDays());
         List<WeeklyCustomSchedule> existing = weeklyCustomScheduleRepository

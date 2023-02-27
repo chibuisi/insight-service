@@ -24,6 +24,7 @@ public class TestLocalDate {
         //System.out.println(localDate.get(weekFields.weekOfYear()));
         //System.out.println(friday.plusDays(4).get(weekFields.weekOfYear()));
         LocalDateTime localDateTime = LocalDateTime.now();
+        System.out.println(localDateTime.getMonthValue());
         //ZonedDateTime dt = localDateTime.atZone(ZoneId.systemDefault());
         //ZonedDateTime dt1 = localDateTime.atZone(ZoneId.of("PST"));
         //System.out.println(dt.getHour());

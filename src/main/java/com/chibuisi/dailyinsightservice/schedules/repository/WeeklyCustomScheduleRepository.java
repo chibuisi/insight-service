@@ -5,6 +5,9 @@ import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleDay;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleStatus;
 import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +24,8 @@ public interface WeeklyCustomScheduleRepository extends JpaRepository<WeeklyCust
     public List<WeeklyCustomSchedule>
     findWeeklyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
             ScheduleStatus scheduleStatus, Integer time, Integer freq);
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE WeeklyCustomSchedule wcs SET wcs.frequencyCounter= :newValue WHERE wcs.frequencyCounter= :frequencyCounter")
+    Integer updateFrequencyCounter(@Param("frequencyCounter") Integer frequencyCounter,
+                                   @Param("newValue") Integer newValue);
 }
