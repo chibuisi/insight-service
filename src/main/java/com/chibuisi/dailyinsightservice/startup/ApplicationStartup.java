@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-@Component
+//@Component
 public class ApplicationStartup 
 implements ApplicationListener<ApplicationReadyEvent> {
 

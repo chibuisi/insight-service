@@ -45,7 +45,6 @@ public class HourlySchedulers {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
         List<DailyCustomSchedule> dailyCustomSchedules =
                 scheduleService.getActiveDailyCustomSchedules(zonedDateTime.getHour());
-        System.out.println(dailyCustomSchedules);
         //transform as ready schedules
         List<ReadySchedule> readySchedules = new ArrayList<>();
         dailyCustomSchedules.forEach(e -> {

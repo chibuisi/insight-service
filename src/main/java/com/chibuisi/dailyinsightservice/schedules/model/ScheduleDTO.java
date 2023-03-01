@@ -35,8 +35,8 @@ public class ScheduleDTO {
                 .userId(scheduleDTO.getUserId())
                 .topic(SupportedTopics.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
-                .frequency(getValidMonthDay(scheduleDTO))
-                .frequencyCounter(getValidMonthDay(scheduleDTO))
+                .frequency(getValidDailyFrequency(scheduleDTO.getFrequency()))
+                .frequencyCounter(getValidDailyFrequency(scheduleDTO.getFrequency()))
                 .time(scheduleDTO.getTime())
                 .build();
         return dailyCustomSchedule;
@@ -68,6 +68,11 @@ public class ScheduleDTO {
         return monthlyCustomSchedule;
     }
 
+    public static Integer getValidDailyFrequency(Integer value){
+        if(value == null || value < 1 || value > 31)
+            throw new IllegalArgumentException("Daily Interval is between 1 and 31");
+        return value;
+    }
     public static Integer getValidWeeklyFrequency(Integer value){
         if(value == null || value < 1 || value > 4)
             throw new IllegalArgumentException("Weekly Interval is between 1 and 4");

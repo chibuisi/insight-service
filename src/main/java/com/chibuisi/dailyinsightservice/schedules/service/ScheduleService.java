@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,7 @@ public class ScheduleService {
     private MonthlyCustomScheduleRepository monthlyCustomScheduleRepository;
 
     public Schedule saveSchedule(ScheduleDTO scheduleDTO){
+        scheduleDTO.setTime(getTimeInMST(scheduleDTO.getTime(), scheduleDTO.getTimezone()));
         SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
         Schedule schedule = getScheduleInstance(scheduleDTO);
         if(schedule instanceof DailyCustomSchedule){
@@ -321,6 +327,21 @@ public class ScheduleService {
                 return defaultSchedule;
             }
         }
+    }
+
+    private Integer getTimeInMST(Integer time, String timeZone){
+        ZoneId validZoneId = null;
+        if(timeZone == null)
+            throw new IllegalArgumentException("Timezone field has invalid value");
+        if(timeZone.length() == 3)
+            validZoneId = ZoneId.of(timeZone.toUpperCase(), ZoneId.SHORT_IDS);
+        else validZoneId = ZoneId.of(timeZone);
+        LocalDate localDate = LocalDate.now();
+        LocalDateTime localDateTime = LocalDateTime.of(localDate.getYear(), localDate.getMonth(),
+                localDate.getDayOfMonth(), time, 0,0);
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime,validZoneId);
+        ZonedDateTime mstTime = zonedDateTime.withZoneSameInstant(ZoneId.of("America/Phoenix"));
+        return mstTime.getHour();
     }
 
     public List<DailyCustomSchedule> getActiveDailyCustomSchedules(Integer time){
