@@ -85,9 +85,9 @@ every midnight scheduler --done
 if a user unsubscribe then deactivate/remove all schedules --done
 schedules - scheduler reads hourly database table and puts on readySchedule table and tries to update
 frequency counter to original if required.
+convert every timezone to system timezone before saving time
 
 Doing
-convert every timezone to system timezone before saving time
 schedules - scheduler reads hourly database table and puts on queue and readySchedule table
 queue
 

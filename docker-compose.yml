@@ -13,20 +13,24 @@ services:
     volumes:
     - mysql:/c/mysql
 
+  pubsub:
+    container_name: di-pubsub
+#    image: messagebird/gcloud-pubsub-emulator:latest
+    image: messagebird/gcloud-pubsub-emulator:latest
+    ports:
+    - 8681:8681
+    environment:
+      PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
+      PUBSUB_EMULATOR_HOST: "localhost:8681"
+    volumes:
+      - pubsub:/opt/data
+
 #  redis:
 #    container_name: di-redis
 #    image: redis:5.0.3-alpine
 #    ports:
 #    - 6379:6379
 #
-#  pubsub:
-#    container_name: di-pubsub
-#    image: messagebird/gcloud-pubsub-emulator
-#    ports:
-#    - 8681:8681
-#    environment:
-#      PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
-#      PUBSUB_EMULATOR_HOST: "localhost:8681"
 #
 #  datastore:
 #    container_name: di-datastore
@@ -40,3 +44,4 @@ services:
 #      DATASTORE_OPTIONS: "--consistency=1.0 --no-store-on-disk"
 volumes:
   mysql:
+  pubsub:
