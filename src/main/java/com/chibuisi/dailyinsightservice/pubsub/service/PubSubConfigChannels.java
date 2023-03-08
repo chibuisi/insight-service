@@ -54,7 +54,7 @@ public class PubSubConfigChannels {
                 "projects/is-daily-insights-dev/subscriptions/emailsubscription");
         messageSource.setAckMode(AckMode.MANUAL);
         messageSource.setPayloadType(String.class);
-        messageSource.setMaxFetchSize(500);
+        messageSource.setMaxFetchSize(5000);
         return messageSource;
     }
 

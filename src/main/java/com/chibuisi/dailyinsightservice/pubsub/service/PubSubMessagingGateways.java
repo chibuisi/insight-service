@@ -9,7 +9,7 @@ public class PubSubMessagingGateways {
     @MessagingGateway
     public interface PubSubOutboundGateway{
         @Gateway(requestChannel = "outputMessageChannel")
-        void sendToPubSub(String text);
+        void sendReadyScheduleToPubSub(String readyScheduleString);
     }
 //    @MessagingGateway
 //    public interface PubSubInboundGateway{

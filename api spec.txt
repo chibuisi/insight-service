@@ -25,10 +25,12 @@ TopicService - manage all areas we cover (food, languages, technology, life, cul
 SchedulerService - periodically retrieve all due items. process and queue. Update next due
 ScheduleService - customize schedule
 QueueSystem (PubSubEmulator)
-ProcessorService - asynchronously dequeue messages, create velocity templates and pass to mail service
+ProcessorService(PubSubServiceActivators) - asynchronously dequeue messages, create velocity templates and pass to mail service
 MailService - asynchronously send out emails(newsletter, motivational quotes)
 //NotificationService - users can configure how to recieve newsletters.
 PaymentService - manage users payment
+
+scheduler -> pubsub -> template -> mail -> pubsub -> mail
 
 
 

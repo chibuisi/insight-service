@@ -75,7 +75,7 @@ def publish_messages(project_id: str, topic_id: str) -> None:
     topic_path = publisher.topic_path(project_id, topic_id)
     count = 1
     for data in range(1):
-        record = "chibuisi.amiaka@gmail.com"
+        record = {"id":3,"userId":1,"time":6,"topic":"COMPANY","timezone":"mst","dateProcessed":[2023,3,7,15,33,56,387000000],"dateSent":None,"status":"PROCESSED","scheduleType":"DAILY"}
         data_str = json.dumps(record)
         data = data_str.encode("utf-8")
         future = publisher.publish(topic_path, data)
@@ -120,3 +120,16 @@ if __name__=="__main__":
 #set PUBSUB_EMULATOR_HOST=[::1]:8681
 #install requirements using this command before running publisher.py
 #python -m pip install -r requirements.txt
+
+#
+# GenericMessage [payload={"id":3,"userId":1,"time":6,"topic":"COMPANY","timezone":"mst","dateProcessed":[2023,3,7,15,33,56,387000000],"dateSent":None,"status":"PROCESSED","scheduleType":"DAILY"}, headers={replyChannel=nullChannel, acknowledgmentCallback=com.google.cloud.spring.pubsub.integration.inbound.PubSubAcknowledgmentCallback@5766ab33, id=1fdff833-f724-4163-ffc9-81168e675624, gcp_pubsub_original_message=PulledAcknowledgeablePubsubMessage{projectId='is-daily-insights-dev', subscriptionName='emailsubscription', message=data: "{\"id\":3,\"userId\":1,\"time\":6,\"topic\":\"COMPANY\",\"timezone\":\"mst\",\"dateProcessed\":[2023,3,7,15,33,56,387000000],\"dateSent\":null,\"status\":\"PROCESSED\",\"scheduleType\":\"DAILY\"}"
+# attributes {
+#     key: "replyChannel"
+#     value: "nullChannel"
+# }
+# message_id: "15"
+# publish_time {
+#                  seconds: 1678228437
+#                  nanos: 765000000
+#              }
+# , ackId='projects/is-daily-insights-dev/subscriptions/emailsubscription:64'}, timestamp=1678228437809}]

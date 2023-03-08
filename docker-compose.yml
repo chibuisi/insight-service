@@ -14,16 +14,31 @@ services:
     - mysql:/c/mysql
 
   pubsub:
-    container_name: di-pubsub
-#    image: messagebird/gcloud-pubsub-emulator:latest
-    image: messagebird/gcloud-pubsub-emulator:latest
+    image: google/cloud-sdk:emulators
+    command:
+      - gcloud
+      - --quiet
+      - beta
+      - emulators
+      - pubsub
+      - start
+      - --project=is-daily-insights-dev
+      - --host-port=0.0.0.0:8681
+    container_name: daily-insights-pubsub
     ports:
     - 8681:8681
     environment:
       PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
       PUBSUB_EMULATOR_HOST: "localhost:8681"
-    volumes:
-      - pubsub:/opt/data
+
+#  pubsub:
+#    container_name: di-pubsub
+#    image: messagebird/gcloud-pubsub-emulator:latest
+#    ports:
+#    - 8681:8681
+#    environment:
+#      PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
+#      PUBSUB_EMULATOR_HOST: "localhost:8681"
 
 #  redis:
 #    container_name: di-redis
