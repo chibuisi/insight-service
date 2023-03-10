@@ -26,4 +26,6 @@ public class TopicItem {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "topicItemId")
     private List<TopicItemProperties> topicItemProperties;
+    private String tag;
+    private String dateTag;
 }

@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface TopicItemRepository extends JpaRepository<TopicItem, Long> {
     public Optional<List<TopicItem>> findAllByTopicName(String name);
     public Optional<TopicItem> findByTitle(String title);
+    public Optional<TopicItem> findTopicItemByTag(String tag);
 }

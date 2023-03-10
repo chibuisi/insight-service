@@ -48,8 +48,18 @@ public class PubSubConfigChannels {
 
     //asynchronous pull
     @Bean
-    @InboundChannelAdapter(value = "inputMessageChannel", poller = @Poller(fixedDelay = "0", maxMessagesPerPoll = "1000"))
+    @InboundChannelAdapter(value = "inputScheduleChannel", poller = @Poller(fixedDelay = "0", maxMessagesPerPoll = "1000"))
     public MessageSource<Object> synchronousPubSubMessageSource(PubSubTemplate pubSubTemplate) {
+        PubSubMessageSource messageSource = new PubSubMessageSource(pubSubTemplate,
+                "projects/is-daily-insights-dev/subscriptions/schedulesubscription");
+        messageSource.setAckMode(AckMode.MANUAL);
+        messageSource.setPayloadType(String.class);
+        messageSource.setMaxFetchSize(5000);
+        return messageSource;
+    }
+    @Bean
+    @InboundChannelAdapter(value = "inputEmailChannel", poller = @Poller(fixedDelay = "0", maxMessagesPerPoll = "1000"))
+    public MessageSource<Object> synchronousEmailMimeMessageSource(PubSubTemplate pubSubTemplate) {
         PubSubMessageSource messageSource = new PubSubMessageSource(pubSubTemplate,
                 "projects/is-daily-insights-dev/subscriptions/emailsubscription");
         messageSource.setAckMode(AckMode.MANUAL);

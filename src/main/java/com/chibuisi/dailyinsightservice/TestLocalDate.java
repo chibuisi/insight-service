@@ -85,6 +85,8 @@ public class TestLocalDate {
         Set<String> zoneIds = ZoneId.getAvailableZoneIds();
         //System.out.println("Extra TimeZone's: " + diff(timeZones, zoneIds));
         //System.out.println("Extra ZoneId's: " + diff(zoneIds, timeZones));
+        LocalDate localDate1 = LocalDate.now();
+        //System.out.println(localDate1);
     }
     static Set<String> diff(Set<String> a, Set<String> b) {
         Set<String> diff = new TreeSet<>(a);

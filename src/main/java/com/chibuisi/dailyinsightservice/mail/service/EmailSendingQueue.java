@@ -1,5 +1,6 @@
-package com.chibuisi.dailyinsightservice.pubsub.service;
+package com.chibuisi.dailyinsightservice.mail.service;
 
+import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
 import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
 import com.chibuisi.dailyinsightservice.template.TemplateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,42 +17,42 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Component;
 
+import javax.mail.internet.MimeMessage;
 import java.util.logging.Logger;
 
 @Component
-public class PubSubServiceActivators {
-    private final Logger LOGGER = Logger.getLogger(PubSubServiceActivators.class.getSimpleName());
+public class EmailSendingQueue {
+    private final Logger LOGGER = Logger.getLogger(EmailSendingQueue.class.getSimpleName());
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private TemplateService templateService;
+    private JavaMailService javaMailService;
 
     // Create an outbound channel adapter to send messages from the output message channel to the topic `topic-two`.
     @Bean
-    @ServiceActivator(inputChannel = "outputScheduleChannel")
+    @ServiceActivator(inputChannel = "outputEmailChannel")
     public MessageHandler messageSender(PubSubTemplate pubsubTemplate) {
-        PubSubMessageHandler adapter = new PubSubMessageHandler(pubsubTemplate, "schedule");
+        PubSubMessageHandler adapter = new PubSubMessageHandler(pubsubTemplate, "email");
 
         adapter.setSuccessCallback(
                 ((ackId, message) ->
-                        LOGGER.info("Message was sent via the outbound channel adapter to email!")));
+                        LOGGER.info("Mail Template was published via the outbound channel adapter to email!")));
 
         adapter.setFailureCallback(
-                (cause, message) -> LOGGER.info("Error sending " + message + " due to " + cause));
+                (cause, message) -> LOGGER.info("Error pubishing " + message + " due to " + cause));
 
         return adapter;
     }
 
     //Define what happens to the messages arriving in the message channel.
-    @ServiceActivator(inputChannel = "inputScheduleChannel")
+    @ServiceActivator(inputChannel = "inputEmailChannel")
     public void messageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
         LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
         String payload = (String) message.getPayload();
-        //ReadySchedule readySchedule1 = objectMapper.
-        ReadySchedule readySchedule = objectMapper.readValue(message.getPayload().toString(),
-               ReadySchedule.class);
-        System.out.println(readySchedule);
-        templateService.createTemplate(readySchedule);
+        MimeMessage mimeMessage = objectMapper.readValue(message.getPayload().toString(),
+               MimeMessage.class);
+        System.out.println(mimeMessage);
+        javaMailService.sendMail(mimeMessage);
         BasicAcknowledgeablePubsubMessage originalMessage =
                     message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
             originalMessage.ack();

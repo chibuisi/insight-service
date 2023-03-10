@@ -4,8 +4,10 @@ import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
 import com.chibuisi.dailyinsightservice.topic.repository.TopicItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,8 @@ import java.util.Optional;
 
 @Service
 public class TopicItemServiceImpl implements TopicItemService{
+    @Value("${topic.items.tag}")
+    private String tag;
     @Autowired
     private TopicItemRepository topicItemRepository;
     @Override
@@ -22,14 +26,10 @@ public class TopicItemServiceImpl implements TopicItemService{
         if(existing.isPresent()){
             return null;
         }
-        Optional<SupportedTopics> supTopic = Arrays.stream(SupportedTopics.values())
-                .filter(e -> e.getName().equalsIgnoreCase(topicItem.getTopicName())).findFirst();
-        if(supTopic.isPresent()){
-            topicItem.setDateAdded(LocalDateTime.now());
-            topicItem.setTopicName(supTopic.get().getName());
-            return topicItemRepository.save(topicItem);
-        }
-        return null;
+        SupportedTopics topic = SupportedTopics.of(topicItem.getTopicName());
+        topicItem.setDateAdded(LocalDateTime.now());
+        topicItem.setTopicName(topic.getName());
+        return topicItemRepository.save(topicItem);
     }
 
     @Override
@@ -62,5 +62,22 @@ public class TopicItemServiceImpl implements TopicItemService{
             }
         });
         return foundTopicItems;
+    }
+
+    public TopicItem findByLatestTag(){
+        Optional<TopicItem> optionalTopicItem = topicItemRepository.findTopicItemByTag(tag);
+        if(optionalTopicItem.isPresent()){
+            return optionalTopicItem.get();
+        }
+        return null;
+    }
+
+    public TopicItem findByDateTag(){
+        LocalDate localDate = LocalDate.now();
+        Optional<TopicItem> optionalTopicItem = topicItemRepository.findTopicItemByTag(localDate.toString());
+        if(optionalTopicItem.isPresent()){
+            return optionalTopicItem.get();
+        }
+        return null;
     }
 }

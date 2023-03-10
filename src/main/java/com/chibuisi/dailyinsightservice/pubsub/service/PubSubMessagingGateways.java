@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class PubSubMessagingGateways {
     @MessagingGateway
     public interface PubSubOutboundGateway{
-        @Gateway(requestChannel = "outputMessageChannel")
+        @Gateway(requestChannel = "outputScheduleChannel")
         void sendReadyScheduleToPubSub(String readyScheduleString);
     }
 //    @MessagingGateway
