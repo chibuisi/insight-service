@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class ScheduleService {
     private WeeklyCustomScheduleRepository weeklyCustomScheduleRepository;
     @Autowired
     private MonthlyCustomScheduleRepository monthlyCustomScheduleRepository;
+    private String timezone = "MST";
 
     public Schedule saveSchedule(ScheduleDTO scheduleDTO){
         scheduleDTO.setTime(getTimeInMST(scheduleDTO.getTime(), scheduleDTO.getTimezone()));
@@ -349,10 +351,14 @@ public class ScheduleService {
                 .findDailyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
                         ScheduleStatus.ACTIVE, time, 1);
     }
-    public List<WeeklyCustomSchedule> getActiveWeeklyCustomSchedules(Integer time){
+    public List<WeeklyCustomSchedule> getActiveWeeklyCustomSchedules(){
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
+        Integer time = zonedDateTime.getHour();
+        String day = zonedDateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        ScheduleDay scheduleDay = ScheduleDay.of(day);
         return weeklyCustomScheduleRepository.
-                findWeeklyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
-                        ScheduleStatus.ACTIVE, time, 1);
+                findWeeklyCustomSchedulesByStatusAndTimeAndFrequencyCounterEqualsAndScheduleDay(
+                        ScheduleStatus.ACTIVE, time, 1, scheduleDay);
     }
     public List<MonthlyCustomSchedule> getActiveMonthlyCustomSchedules(Integer time){
         return monthlyCustomScheduleRepository

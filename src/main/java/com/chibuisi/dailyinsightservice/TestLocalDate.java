@@ -1,6 +1,7 @@
 package com.chibuisi.dailyinsightservice;
 
 import java.time.*;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -86,6 +87,7 @@ public class TestLocalDate {
         //System.out.println("Extra TimeZone's: " + diff(timeZones, zoneIds));
         //System.out.println("Extra ZoneId's: " + diff(zoneIds, timeZones));
         LocalDate localDate1 = LocalDate.now();
+        //System.out.println(localDate1.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()));
         //System.out.println(localDate1);
     }
     static Set<String> diff(Set<String> a, Set<String> b) {

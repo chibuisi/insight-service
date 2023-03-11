@@ -10,6 +10,8 @@ public class PubSubMessagingGateways {
     public interface PubSubOutboundGateway{
         @Gateway(requestChannel = "outputScheduleChannel")
         void sendReadyScheduleToPubSub(String readyScheduleString);
+        @Gateway(requestChannel = "outputEmailChannel")
+        void sendMailTemplateToPubSub(String mailTemplate);
     }
 //    @MessagingGateway
 //    public interface PubSubInboundGateway{

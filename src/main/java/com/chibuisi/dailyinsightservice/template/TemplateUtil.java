@@ -4,15 +4,15 @@ public class TemplateUtil {
     public static String getTemplateByTopicName(String topicName){
         switch (topicName){
             case "word":
-                return "word.ftl";
+                return "word.ftlh";
             case "company":
-                return "company.ftl";
+                return "company.ftlh";
             case "technology":
-                return "technology.ftl";
+                return "technology.ftlh";
             case "motivation":
-                return "motivation.ftl";
+                return "motivation.ftlh";
             default:
-                return "default.ftl";
+                return "default.ftlh";
         }
     }
 }

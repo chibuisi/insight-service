@@ -1,8 +1,7 @@
 package com.chibuisi.dailyinsightservice.mail.service.serviceimpl;
 
 import com.chibuisi.dailyinsightservice.mail.model.TemplateHelper;
-import com.chibuisi.dailyinsightservice.mail.service.EmailGateway;
-import com.chibuisi.dailyinsightservice.mail.service.MailService;
+import com.chibuisi.dailyinsightservice.pubsub.service.PubSubMessagingGateways;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,21 +9,22 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 
-public class JavaMailService implements MailService {
+@Service
+public class JavaMailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
-    private EmailGateway.EmailOutboundGateway emailOutboundGateway;
+    private PubSubMessagingGateways.PubSubOutboundGateway pubSubOutboundGateway;
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Override
     @Async
     public void sendMail(MimeMessage mimeMessage){
         javaMailSender.send(mimeMessage);
@@ -47,7 +47,7 @@ public class JavaMailService implements MailService {
             messagingException.printStackTrace();
         }
         try {
-            emailOutboundGateway
+            pubSubOutboundGateway
                     .sendMailTemplateToPubSub(objectMapper.writeValueAsString(mimeMessage));
         } catch (JsonProcessingException e) {
             e.printStackTrace();

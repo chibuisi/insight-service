@@ -75,9 +75,10 @@ public class HourlySchedulers {
     @Scheduled(cron = "0 0 * * * *")//every hour
     public void everyHourForWeeklyTableScheduler(){
         System.out.println("everyHourForWeeklyTableScheduler");
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
         List<WeeklyCustomSchedule> weeklyCustomSchedules =
-                scheduleService.getActiveWeeklyCustomSchedules(zonedDateTime.getHour());
+                scheduleService.getActiveWeeklyCustomSchedules();
+//        weeklyCustomSchedules
+//                .removeIf(e -> !e.getScheduleDay().equals(zonedDateTime.getDayOfWeek().getDisplayName()))
         List<ReadySchedule> readySchedules = new ArrayList<>();
         weeklyCustomSchedules.forEach(e -> {
             ReadySchedule readySchedule = ReadySchedule.builder()

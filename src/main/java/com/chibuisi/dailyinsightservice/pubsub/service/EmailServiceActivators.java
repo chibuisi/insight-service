@@ -1,8 +1,6 @@
-package com.chibuisi.dailyinsightservice.mail.service;
+package com.chibuisi.dailyinsightservice.pubsub.service;
 
 import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
-import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
-import com.chibuisi.dailyinsightservice.template.TemplateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
@@ -21,8 +19,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.logging.Logger;
 
 @Component
-public class EmailSendingQueue {
-    private final Logger LOGGER = Logger.getLogger(EmailSendingQueue.class.getSimpleName());
+public class EmailServiceActivators {
+    private final Logger LOGGER = Logger.getLogger(EmailServiceActivators.class.getSimpleName());
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -31,7 +29,7 @@ public class EmailSendingQueue {
     // Create an outbound channel adapter to send messages from the output message channel to the topic `topic-two`.
     @Bean
     @ServiceActivator(inputChannel = "outputEmailChannel")
-    public MessageHandler messageSender(PubSubTemplate pubsubTemplate) {
+    public MessageHandler emailMessageSender(PubSubTemplate pubsubTemplate) {
         PubSubMessageHandler adapter = new PubSubMessageHandler(pubsubTemplate, "email");
 
         adapter.setSuccessCallback(
@@ -46,7 +44,7 @@ public class EmailSendingQueue {
 
     //Define what happens to the messages arriving in the message channel.
     @ServiceActivator(inputChannel = "inputEmailChannel")
-    public void messageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
+    public void emailMessageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
         LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
         String payload = (String) message.getPayload();
         MimeMessage mimeMessage = objectMapper.readValue(message.getPayload().toString(),

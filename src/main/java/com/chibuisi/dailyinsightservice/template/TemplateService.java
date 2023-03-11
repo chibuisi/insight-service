@@ -28,10 +28,7 @@ public class TemplateService {
     private Configuration configuration;
     @Autowired
     private UserService userService;
-    private MailService mailService;
-    public TemplateService(){
-        mailService = new JavaMailService();
-    }
+    private JavaMailService mailService;
     public void createTemplate(ReadySchedule readySchedule){
         User user = userService.getUserById(readySchedule.getUserId());
         SupportedTopics topic = SupportedTopics.of(readySchedule.getTopic().getName());

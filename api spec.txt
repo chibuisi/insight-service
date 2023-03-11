@@ -88,10 +88,14 @@ if a user unsubscribe then deactivate/remove all schedules --done
 schedules - scheduler reads hourly database table and puts on readySchedule table and tries to update
 frequency counter to original if required.
 convert every timezone to system timezone before saving time
+schedules - scheduler reads hourly database table and puts on queue and readySchedule table
 
 Doing
-schedules - scheduler reads hourly database table and puts on queue and readySchedule table
-queue
+model topic item and user offset relationship
+add a table to save user topic item offsets
+add an offsetSequence to topic item table
+select topic item by user offset
+update user offset
 
 
 Challenges faced
@@ -134,3 +138,8 @@ if freqCounter > 1
 //to update freqCounter
 if freq != freqCounter
     freCounter = freq
+
+
+*Note: it is not efficient to pick topic items by date tags. reason is that
+we will require a new topic item for each day. More efficient is offsetting each topic item
+for each user. This will allow us back-forward or reuse previous topic items
