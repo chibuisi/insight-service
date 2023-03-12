@@ -3,7 +3,6 @@ package com.chibuisi.dailyinsightservice.template;
 import com.chibuisi.dailyinsightservice.article.model.Article;
 import com.chibuisi.dailyinsightservice.article.model.Newsletter;
 import com.chibuisi.dailyinsightservice.mail.model.TemplateHelper;
-import com.chibuisi.dailyinsightservice.mail.service.MailService;
 import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
 import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
 import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
@@ -28,7 +27,8 @@ public class TemplateService {
     private Configuration configuration;
     @Autowired
     private UserService userService;
-    private JavaMailService mailService;
+    @Autowired
+    private JavaMailService javaMailService;
     public void createTemplate(ReadySchedule readySchedule){
         User user = userService.getUserById(readySchedule.getUserId());
         SupportedTopics topic = SupportedTopics.of(readySchedule.getTopic().getName());
@@ -36,7 +36,7 @@ public class TemplateService {
         Article article = Article.builder()
                 .topic(readySchedule.getTopic()).topicItem(topicItem).build();
         Newsletter newsletter = Newsletter.builder()
-                .article(article)
+                .article(article).frequencyType(readySchedule.getScheduleType().getValue())
                 .header(null).footer(null).build();
         String htmlTemplate = "";
         try {
@@ -47,8 +47,9 @@ public class TemplateService {
             e.printStackTrace();
         }
         TemplateHelper templateHelper = TemplateHelper.builder()
-                .htmlTemplate(htmlTemplate).user(user).topic(topic.getName()).build();
-        mailService.processTemplate(templateHelper);
+                .htmlTemplate(htmlTemplate).user(user).readySchedule(readySchedule)
+                .newsletter(newsletter).topic(topic.getName()).build();
+        javaMailService.queueTemplate(templateHelper);
     }
 
 }

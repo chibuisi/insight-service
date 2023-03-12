@@ -53,9 +53,8 @@ public class HourlySchedulers {
     @Scheduled(cron = "0 0 * * * *")//every hour
     public void everyHourForDailyTableScheduler(){
         System.out.println("everyHourForDailyTableScheduler");
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
         List<DailyCustomSchedule> dailyCustomSchedules =
-                scheduleService.getActiveDailyCustomSchedules(zonedDateTime.getHour());
+                scheduleService.getActiveDailyCustomSchedules();
         //transform as ready schedules
         List<ReadySchedule> readySchedules = new ArrayList<>();
         dailyCustomSchedules.forEach(e -> {
@@ -77,8 +76,6 @@ public class HourlySchedulers {
         System.out.println("everyHourForWeeklyTableScheduler");
         List<WeeklyCustomSchedule> weeklyCustomSchedules =
                 scheduleService.getActiveWeeklyCustomSchedules();
-//        weeklyCustomSchedules
-//                .removeIf(e -> !e.getScheduleDay().equals(zonedDateTime.getDayOfWeek().getDisplayName()))
         List<ReadySchedule> readySchedules = new ArrayList<>();
         weeklyCustomSchedules.forEach(e -> {
             ReadySchedule readySchedule = ReadySchedule.builder()
@@ -97,9 +94,8 @@ public class HourlySchedulers {
     @Scheduled(cron = "0 0 * * * *")//every hour
     public void everyHourForMonthlyTableScheduler(){
         System.out.println("everyHourForMonthlyTableScheduler");
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
         List<MonthlyCustomSchedule> monthlyCustomSchedules =
-                scheduleService.getActiveMonthlyCustomSchedules(zonedDateTime.getHour());
+                scheduleService.getActiveMonthlyCustomSchedules();
         List<ReadySchedule> readySchedules = new ArrayList<>();
         monthlyCustomSchedules.forEach(e -> {
             ReadySchedule readySchedule = ReadySchedule.builder()

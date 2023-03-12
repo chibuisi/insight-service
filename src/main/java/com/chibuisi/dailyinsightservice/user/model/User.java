@@ -19,8 +19,9 @@ public class User {
     private Long id;
     private String firstname;
     private String lastname;
-    @Column(unique = true)
+    //@Column(unique = true)
     private String email;
     private LocalDateTime dateJoined;
     private String ipAddress;
+    private String timezone;
 }

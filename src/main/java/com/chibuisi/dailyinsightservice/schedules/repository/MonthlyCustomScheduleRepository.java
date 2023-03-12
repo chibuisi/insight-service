@@ -20,8 +20,8 @@ public interface MonthlyCustomScheduleRepository extends JpaRepository<MonthlyCu
     public List<MonthlyCustomSchedule> findMonthlySchedulesByUserIdAndTopic(Long userId, SupportedTopics topic);
     public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByTopic(SupportedTopics topic);
     public void deleteAllByUserIdAndTopic(Long userId, SupportedTopics topic);
-    public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
-            ScheduleStatus scheduleStatus, Integer time, Integer freq);
+    public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByStatusAndTimeAndDayAndFrequencyCounterEquals(
+            ScheduleStatus scheduleStatus, Integer time, Integer day, Integer freq);
     @Modifying(clearAutomatically = true)
     @Query("UPDATE MonthlyCustomSchedule mcs SET mcs.frequencyCounter= :newValue WHERE mcs.frequencyCounter= :frequencyCounter")
     Integer updateFrequencyCounter(@Param("frequencyCounter") Integer frequencyCounter,

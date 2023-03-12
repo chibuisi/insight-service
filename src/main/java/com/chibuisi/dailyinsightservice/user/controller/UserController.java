@@ -21,7 +21,8 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(User user){
+    public User updateUser(@RequestBody User user, HttpServletRequest request){
+        user.setIpAddress(request.getRemoteAddr());
         return userService.updateUser(user);
     }
 

@@ -18,12 +18,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
         user.setDateJoined(LocalDateTime.now());
+        User existingUser = userRepository.getUserByEmail(user.getEmail());
+        if(existingUser != null)
+            return existingUser;
         return userRepository.save(user);
     }
 
     @Override
     public User updateUser(User user) {
-        return saveUser(user);
+        User existingUser = userRepository.getUserByEmail(user.getEmail());
+        if(existingUser == null)
+            return user;
+        existingUser.setIpAddress(user.getIpAddress());
+        existingUser.setFirstname(user.getFirstname());
+        existingUser.setLastname(user.getLastname());
+        existingUser.setTimezone(user.getTimezone());
+        return userRepository.save(existingUser);
     }
 
     @Override

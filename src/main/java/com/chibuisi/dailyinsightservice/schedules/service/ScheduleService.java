@@ -35,45 +35,61 @@ public class ScheduleService {
     private MonthlyCustomScheduleRepository monthlyCustomScheduleRepository;
     private String timezone = "MST";
 
+    @Transactional
     public Schedule saveSchedule(ScheduleDTO scheduleDTO){
         scheduleDTO.setTime(getTimeInMST(scheduleDTO.getTime(), scheduleDTO.getTimezone()));
         SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
         Schedule schedule = getScheduleInstance(scheduleDTO);
         if(schedule instanceof DailyCustomSchedule){
+            synchronizeAllScheduleTable(scheduleDTO);
             DailyCustomSchedule existing = dailyCustomScheduleRepository
                     .findDailyCustomScheduleByUserIdAndTopic(scheduleDTO.getUserId(),
                             topic);
-            if(existing != null)
-                return null;
+            if(existing != null){
+                existing.setTime(scheduleDTO.getTime());
+                existing.setFrequency(scheduleDTO.getFrequency());
+                existing.setFrequencyCounter(scheduleDTO.getFrequency());
+                return dailyCustomScheduleRepository.save(existing);
+            }
             DailyCustomSchedule dailyCustomSchedule = (DailyCustomSchedule) schedule;
             dailyCustomSchedule.setStatus(ScheduleStatus.ACTIVE);
             return dailyCustomScheduleRepository.save(dailyCustomSchedule);
         }
         else if(schedule instanceof WeeklyCustomSchedule){
+            synchronizeAllScheduleTable(scheduleDTO);
             ScheduleDay scheduleDay = ScheduleDay.of(scheduleDTO.getScheduleDay());
             WeeklyCustomSchedule existing = weeklyCustomScheduleRepository
                     .findWeeklyCustomScheduleByUserIdAndTopicAndScheduleDay(
                             scheduleDTO.getUserId(), topic, scheduleDay);
-            if(existing == null) {
-                WeeklyCustomSchedule newInstance = (WeeklyCustomSchedule) schedule;
-                newInstance.setScheduleDay(scheduleDay);
-                newInstance.setStatus(ScheduleStatus.ACTIVE);
-                return weeklyCustomScheduleRepository.save(newInstance);
+            if(existing != null) {
+                existing.setTime(scheduleDTO.getTime());
+                existing.setFrequency(scheduleDTO.getFrequency());
+                existing.setFrequencyCounter(scheduleDTO.getFrequency());
+                existing.setScheduleDay(scheduleDay);
+                return weeklyCustomScheduleRepository.save(existing);
             }
-            return existing;
+            WeeklyCustomSchedule newInstance = (WeeklyCustomSchedule) schedule;
+            newInstance.setScheduleDay(scheduleDay);
+            newInstance.setStatus(ScheduleStatus.ACTIVE);
+            return weeklyCustomScheduleRepository.save(newInstance);
         }
         else if(schedule instanceof MonthlyCustomSchedule){
+            synchronizeAllScheduleTable(scheduleDTO);
             Integer day = ScheduleDTO.getValidMonthDay(scheduleDTO);
             MonthlyCustomSchedule existing = monthlyCustomScheduleRepository
                     .findMonthlyCustomScheduleByUserIdAndTopicAndDay(scheduleDTO.getUserId(),
                             topic, day);
-            if(existing == null) {
-                MonthlyCustomSchedule monthlyCustomSchedule = (MonthlyCustomSchedule) schedule;
-                monthlyCustomSchedule.setDay(day);
-                monthlyCustomSchedule.setStatus(ScheduleStatus.ACTIVE);
-                return monthlyCustomScheduleRepository.save(monthlyCustomSchedule);
+            if(existing != null) {
+                existing.setTime(scheduleDTO.getTime());
+                existing.setFrequency(scheduleDTO.getFrequency());
+                existing.setFrequencyCounter(scheduleDTO.getFrequency());
+                existing.setDay(day);
+                return monthlyCustomScheduleRepository.save(existing);
             }
-            return existing;
+            MonthlyCustomSchedule monthlyCustomSchedule = (MonthlyCustomSchedule) schedule;
+            monthlyCustomSchedule.setDay(day);
+            monthlyCustomSchedule.setStatus(ScheduleStatus.ACTIVE);
+            return monthlyCustomScheduleRepository.save(monthlyCustomSchedule);
         }
         else {
             DefaultSchedule existing = defaultScheduleRepository
@@ -346,7 +362,31 @@ public class ScheduleService {
         return mstTime.getHour();
     }
 
-    public List<DailyCustomSchedule> getActiveDailyCustomSchedules(Integer time){
+    @Transactional
+    public void synchronizeAllScheduleTable(ScheduleDTO scheduleDTO){
+        ScheduleType scheduleType = ScheduleType.of(scheduleDTO.getScheduleType());
+        Long userId = scheduleDTO.getUserId();
+        SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
+        defaultScheduleRepository.deleteAllByUserIdAndTopic(userId, topic);
+        List<ScheduleType> scheduleTypes = new ArrayList<>(
+                Arrays.asList(ScheduleType.DAILY,ScheduleType.MONTHLY, ScheduleType.WEEKLY));
+        scheduleTypes.removeIf(e -> e.equals(scheduleType));
+        scheduleTypes.forEach(e -> {
+            if(e.equals(ScheduleType.DAILY)){
+                dailyCustomScheduleRepository.deleteAllByUserIdAndTopic(userId, topic);
+            }
+            else if(e.equals(ScheduleType.WEEKLY)){
+                weeklyCustomScheduleRepository.deleteAllByUserIdAndTopic(userId, topic);
+            }
+            else if(e.equals(ScheduleType.MONTHLY)){
+                monthlyCustomScheduleRepository.deleteAllByUserIdAndTopic(userId, topic);
+            }
+        });
+    }
+
+    public List<DailyCustomSchedule> getActiveDailyCustomSchedules(){
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
+        Integer time = zonedDateTime.getHour();
         return dailyCustomScheduleRepository
                 .findDailyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
                         ScheduleStatus.ACTIVE, time, 1);
@@ -360,10 +400,13 @@ public class ScheduleService {
                 findWeeklyCustomSchedulesByStatusAndTimeAndFrequencyCounterEqualsAndScheduleDay(
                         ScheduleStatus.ACTIVE, time, 1, scheduleDay);
     }
-    public List<MonthlyCustomSchedule> getActiveMonthlyCustomSchedules(Integer time){
+    public List<MonthlyCustomSchedule> getActiveMonthlyCustomSchedules(){
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of(timezone, ZoneId.SHORT_IDS));
+        Integer time = zonedDateTime.getHour();
+        Integer day = zonedDateTime.getDayOfMonth();
         return monthlyCustomScheduleRepository
-                .findMonthlyCustomSchedulesByStatusAndTimeAndFrequencyCounterEquals(
-                        ScheduleStatus.ACTIVE, time, 1);
+                .findMonthlyCustomSchedulesByStatusAndTimeAndDayAndFrequencyCounterEquals(
+                        ScheduleStatus.ACTIVE, time, day, 1);
     }
     public List<DefaultSchedule> getActiveDefaultSchedules(){
         return defaultScheduleRepository.findDefaultSchedulesByStatus(ScheduleStatus.ACTIVE);

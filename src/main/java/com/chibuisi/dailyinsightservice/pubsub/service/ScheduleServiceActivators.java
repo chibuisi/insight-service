@@ -47,7 +47,6 @@ public class ScheduleServiceActivators {
     public void scheduleMessageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
         LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
         String payload = (String) message.getPayload();
-        //ReadySchedule readySchedule1 = objectMapper.
         ReadySchedule readySchedule = objectMapper.readValue(message.getPayload().toString(),
                ReadySchedule.class);
         System.out.println(readySchedule);

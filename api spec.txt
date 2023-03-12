@@ -89,6 +89,13 @@ schedules - scheduler reads hourly database table and puts on readySchedule tabl
 frequency counter to original if required.
 convert every timezone to system timezone before saving time
 schedules - scheduler reads hourly database table and puts on queue and readySchedule table
+update user (firstname and lastname)
+fix subscribe failure when wrong timezone
+create TemplateHelper
+select monthly schedule by day
+synchronize default, daily, weekly and monthly schedules
+update sent column on ready schedule
+
 
 Doing
 model topic item and user offset relationship

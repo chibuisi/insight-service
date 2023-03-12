@@ -1,5 +1,6 @@
 package com.chibuisi.dailyinsightservice.pubsub.service;
 
+import com.chibuisi.dailyinsightservice.mail.model.TemplateHelper;
 import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,10 +48,10 @@ public class EmailServiceActivators {
     public void emailMessageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
         LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
         String payload = (String) message.getPayload();
-        MimeMessage mimeMessage = objectMapper.readValue(message.getPayload().toString(),
-               MimeMessage.class);
-        System.out.println(mimeMessage);
-        javaMailService.sendMail(mimeMessage);
+        TemplateHelper templateHelper = objectMapper.readValue(message.getPayload().toString(),
+               TemplateHelper.class);
+        System.out.println(templateHelper);
+        javaMailService.sendMail(templateHelper);
         BasicAcknowledgeablePubsubMessage originalMessage =
                     message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
             originalMessage.ack();

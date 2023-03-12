@@ -23,6 +23,14 @@ public class NewWeekOrMonthService {
         newWeekOrMonthRepository.saveAll(newWeekOrMonthList);
     }
 
+    public NewWeekOrMonth saveNewWeekOrMonth(NewWeekOrMonth newWeekOrMonth){
+        return newWeekOrMonthRepository.save(newWeekOrMonth);
+    }
+
+    public NewWeekOrMonth getNewWeekOrMonth(WeekOrMonth weekOrMonth){
+        return newWeekOrMonthRepository.getNewWeekOrMonthByName(weekOrMonth);
+    }
+
     public int checkForNewWeek(){
         LocalDateTime localDateTime = LocalDateTime.now();
         WeekFields weekFields = WeekFields.of(Locale.getDefault());

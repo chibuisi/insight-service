@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class Newsletter {
+    private String frequencyType;
     private Article article;
     private Header header;
     private Footer footer;

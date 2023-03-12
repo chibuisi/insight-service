@@ -34,11 +34,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         User user = userService.getUserByEmail(subscription.getEmail());
         SupportedTopics supportedTopics = SupportedTopics.of(subscription.getTopic());
         if(user == null){
-            user = User.builder().dateJoined(LocalDateTime.now())
+            user = User.builder().timezone("mst").dateJoined(LocalDateTime.now())
                     .email(subscription.getEmail()).build();
             user = userService.saveUser(user);
         }
-        ScheduleDTO scheduleDTO = ScheduleDTO.builder()
+        ScheduleDTO scheduleDTO = ScheduleDTO.builder().time(6).timezone(user.getTimezone())
                 .userId(user.getId()).topic(supportedTopics.getName()).build();
         Subscription existing = subscriptionRepository
                 .findByEmailAndTopic(subscription.getEmail(), subscription.getTopic());
