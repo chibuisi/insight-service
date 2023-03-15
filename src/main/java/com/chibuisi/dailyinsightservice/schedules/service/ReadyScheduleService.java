@@ -7,11 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReadyScheduleService {
     @Autowired
     private ReadyScheduleRepository readyScheduleRepository;
+
+    public Optional<ReadySchedule> getReadyScheduleById(Long id){
+        return readyScheduleRepository.findById(id);
+    }
 
     public List<ReadySchedule> getReadySchedules(){
         return readyScheduleRepository.getReadySchedulesByStatus(ReadyScheduleStatus.UNSENT);

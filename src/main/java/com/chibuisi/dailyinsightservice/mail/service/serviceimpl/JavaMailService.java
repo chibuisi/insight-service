@@ -36,8 +36,9 @@ public class JavaMailService {
     @Value("${spring.application.name}")
     private String appName;
 
-    @Async
+    @Async("sendMailThreadPoolTaskExecutor")
     public void sendMail(TemplateHelper templateHelper){
+        System.out.println("Sending to: "+ templateHelper.getUser().getEmail()+", Thread "+ Thread.currentThread().getName());
         ReadySchedule readySchedule = templateHelper.getReadySchedule();
         MimeMessage mimeMessage = getMimeMessage(templateHelper);
         try{

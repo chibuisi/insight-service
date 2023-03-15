@@ -23,118 +23,93 @@ import java.util.List;
 @Configuration
 public class HourlySchedulers {
     @Autowired
-    private ReadyScheduleService readyScheduleService;
-    @Autowired
     private ScheduleService scheduleService;
     @Autowired
-    private PubSubMessagingGateways.PubSubOutboundGateway pubSubOutboundGateway;
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private String timezone = "MST";
+    private HourlyScheduleHelper hourlyScheduleHelper;
 
     @Scheduled(cron = "0 0 6 * * *")//every six am
     public void everySixAMForDefaultTableScheduler(){
-        System.out.println("everyHourForDefaultTableScheduler");
+        System.out.println("everyHourForDefaultTableScheduler: "+Thread.currentThread().getName());
         List<DefaultSchedule> defaultSchedules =
                 scheduleService.getActiveDefaultSchedules();
-        List<ReadySchedule> readySchedules = new ArrayList<>();
-        defaultSchedules.forEach(e -> {
-            ReadySchedule readySchedule = ReadySchedule.builder()
-                    .time(6).scheduleType(ScheduleType.DAILY)
-                    .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
-                    .topic(e.getTopic()).userId(e.getUserId()).build();
-            readySchedules.add(readySchedule);
-        });
-        publishReadySchedulesToPubSub(readySchedules);
-        saveReadySchedules(readySchedules);
-        scheduleService.saveDefaultSchedules(defaultSchedules);
+        if(defaultSchedules != null && defaultSchedules.size() > 0){
+            List<ReadySchedule> readySchedules = new ArrayList<>();
+            defaultSchedules.forEach(e -> {
+                ReadySchedule readySchedule = ReadySchedule.builder()
+                        .time(6).scheduleType(ScheduleType.DAILY)
+                        .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
+                        .topic(e.getTopic()).userId(e.getUserId()).build();
+                hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule);
+            });
+            hourlyScheduleHelper.saveReadySchedules(readySchedules);
+            scheduleService.saveDefaultSchedules(defaultSchedules);
+        }
     }
-    @Scheduled(cron = "0 0 * * * *")//every hour
+    @Scheduled(cron = "0 0 1-23 * * *")//every hour except 00:00AM
     public void everyHourForDailyTableScheduler(){
-        System.out.println("everyHourForDailyTableScheduler");
+        System.out.println("everyHourForDailyTableScheduler: " + Thread.currentThread().getName());
         List<DailyCustomSchedule> dailyCustomSchedules =
                 scheduleService.getActiveDailyCustomSchedules();
-        //transform as ready schedules
-        List<ReadySchedule> readySchedules = new ArrayList<>();
-        dailyCustomSchedules.forEach(e -> {
-            ReadySchedule readySchedule = ReadySchedule.builder()
-                    .time(e.getTime()).scheduleType(ScheduleType.DAILY)
-                    .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
-                    .topic(e.getTopic()).userId(e.getUserId()).build();
-            readySchedules.add(readySchedule);
-            if(e.getFrequency() > e.getFrequencyCounter()){
-                e.setFrequencyCounter(e.getFrequency());
-            }
-        });
-        publishReadySchedulesToPubSub(readySchedules);
-        saveReadySchedules(readySchedules);
-        scheduleService.saveDailySchedules(dailyCustomSchedules);
+        //transform as ready schedules if list not empty
+        if(dailyCustomSchedules != null && dailyCustomSchedules.size() > 0){
+            List<ReadySchedule> readySchedules = new ArrayList<>();
+            dailyCustomSchedules.forEach(e -> {
+                ReadySchedule readySchedule = ReadySchedule.builder()
+                        .time(e.getTime()).scheduleType(ScheduleType.DAILY)
+                        .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
+                        .topic(e.getTopic()).userId(e.getUserId()).build();
+                hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule);
+                if(e.getFrequency() > e.getFrequencyCounter()){
+                    e.setFrequencyCounter(e.getFrequency());
+                }
+            });
+            hourlyScheduleHelper.saveReadySchedules(readySchedules);
+            scheduleService.saveDailySchedules(dailyCustomSchedules);
+        }
+
     }
-    @Scheduled(cron = "0 0 * * * *")//every hour
+    @Scheduled(cron = "0 0 1-23 * * *")//every hour except 00:00AM
     public void everyHourForWeeklyTableScheduler(){
-        System.out.println("everyHourForWeeklyTableScheduler");
+        System.out.println("everyHourForWeeklyTableScheduler: " + Thread.currentThread().getName());
         List<WeeklyCustomSchedule> weeklyCustomSchedules =
                 scheduleService.getActiveWeeklyCustomSchedules();
-        List<ReadySchedule> readySchedules = new ArrayList<>();
-        weeklyCustomSchedules.forEach(e -> {
-            ReadySchedule readySchedule = ReadySchedule.builder()
-                    .time(e.getTime()).scheduleType(ScheduleType.DAILY)
-                    .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
-                    .topic(e.getTopic()).userId(e.getUserId()).build();
-            readySchedules.add(readySchedule);
-            if(e.getFrequency() > e.getFrequencyCounter()){
-                e.setFrequencyCounter(e.getFrequency());
-            }
-        });
-        publishReadySchedulesToPubSub(readySchedules);
-        saveReadySchedules(readySchedules);
-        scheduleService.saveWeeklySchedules(weeklyCustomSchedules);
+        if(weeklyCustomSchedules != null && weeklyCustomSchedules.size() > 0){
+            List<ReadySchedule> readySchedules = new ArrayList<>();
+            weeklyCustomSchedules.forEach(e -> {
+                ReadySchedule readySchedule = ReadySchedule.builder()
+                        .time(e.getTime()).scheduleType(ScheduleType.DAILY)
+                        .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
+                        .topic(e.getTopic()).userId(e.getUserId()).build();
+                hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule);
+                if(e.getFrequency() > e.getFrequencyCounter()){
+                    e.setFrequencyCounter(e.getFrequency());
+                }
+            });
+            hourlyScheduleHelper.saveReadySchedules(readySchedules);
+            scheduleService.saveWeeklySchedules(weeklyCustomSchedules);
+        }
     }
-    @Scheduled(cron = "0 0 * * * *")//every hour
+    @Scheduled(cron = "0 0 1-23 * * *")//every hour except 00:00AM
     public void everyHourForMonthlyTableScheduler(){
-        System.out.println("everyHourForMonthlyTableScheduler");
+        System.out.println("everyHourForMonthlyTableScheduler: " + Thread.currentThread().getName());
         List<MonthlyCustomSchedule> monthlyCustomSchedules =
                 scheduleService.getActiveMonthlyCustomSchedules();
-        List<ReadySchedule> readySchedules = new ArrayList<>();
-        monthlyCustomSchedules.forEach(e -> {
-            ReadySchedule readySchedule = ReadySchedule.builder()
-                    .time(e.getTime()).scheduleType(ScheduleType.DAILY)
-                    .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
-                    .topic(e.getTopic()).userId(e.getUserId()).build();
-            readySchedules.add(readySchedule);
-            if(e.getFrequency() > e.getFrequencyCounter()){
-                e.setFrequencyCounter(e.getFrequency());
-            }
-        });
-        publishReadySchedulesToPubSub(readySchedules);
-        saveReadySchedules(readySchedules);
-        scheduleService.saveMonthlySchedules(monthlyCustomSchedules);
-    }
-
-    @Async
-    void publishReadySchedulesToPubSub(List<ReadySchedule> readySchedules){
-        readySchedules.forEach(readySchedule -> {
-            String payload = "";
-            try {
-                payload = objectMapper.writeValueAsString(readySchedule);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            pubSubOutboundGateway.sendReadyScheduleToPubSub(payload);
-        });
-    }
-
-    @Async
-    @Transactional
-    void saveReadySchedules(List<ReadySchedule> readySchedules){
-        readyScheduleService.saveReadySchedules(readySchedules);
-    }
-
-    //@Scheduled(cron = "0 */30 * * * *")//every 30 minutes
-    public void temporaryCleanUpReadySchedules(){
-        System.out.println("Clean Up Schedule");
-        readyScheduleService.cleanUpAllTableData();
+        if(monthlyCustomSchedules != null && monthlyCustomSchedules.size() > 0){
+            List<ReadySchedule> readySchedules = new ArrayList<>();
+            monthlyCustomSchedules.forEach(e -> {
+                ReadySchedule readySchedule = ReadySchedule.builder()
+                        .time(e.getTime()).scheduleType(ScheduleType.DAILY)
+                        .dateProcessed(LocalDateTime.now()).status(ReadyScheduleStatus.PROCESSED)
+                        .topic(e.getTopic()).userId(e.getUserId()).build();
+                //readySchedules.add(readySchedule);
+                hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule);
+                if(e.getFrequency() > e.getFrequencyCounter()){
+                    e.setFrequencyCounter(e.getFrequency());
+                }
+            });
+            hourlyScheduleHelper.saveReadySchedules(readySchedules);
+            scheduleService.saveMonthlySchedules(monthlyCustomSchedules);
+        }
     }
 
 }

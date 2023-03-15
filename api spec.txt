@@ -98,6 +98,8 @@ update sent column on ready schedule
 
 
 Doing
+require a user for creating custom schedules
+save sent mails on a mail table
 model topic item and user offset relationship
 add a table to save user topic item offsets
 add an offsetSequence to topic item table
@@ -150,3 +152,10 @@ if freq != freqCounter
 *Note: it is not efficient to pick topic items by date tags. reason is that
 we will require a new topic item for each day. More efficient is offsetting each topic item
 for each user. This will allow us back-forward or reuse previous topic items
+
+Questions
+How many threads can a Java VM support?
+Maximum number of threads depends on following things:
+Hardware Configuration like microprocessor, RAM.
+Operating System like whether it is 32-bit or 64-bit
+Code inside the run method. If code inside the run method is huge then single thread object will have more memory requirement

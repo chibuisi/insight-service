@@ -39,18 +39,18 @@ public class EmailServiceActivators {
 
         adapter.setFailureCallback(
                 (cause, message) -> LOGGER.info("Error pubishing " + message + " due to " + cause));
-
+//
         return adapter;
     }
 
     //Define what happens to the messages arriving in the message channel.
     @ServiceActivator(inputChannel = "inputEmailChannel")
     public void emailMessageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
-        LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
+        //LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
         String payload = (String) message.getPayload();
         TemplateHelper templateHelper = objectMapper.readValue(message.getPayload().toString(),
                TemplateHelper.class);
-        System.out.println(templateHelper);
+        //System.out.println(templateHelper);
         javaMailService.sendMail(templateHelper);
         BasicAcknowledgeablePubsubMessage originalMessage =
                     message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
