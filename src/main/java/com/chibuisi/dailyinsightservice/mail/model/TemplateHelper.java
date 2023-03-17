@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 public class TemplateHelper {
     private Newsletter newsletter;
     private String htmlTemplate;
-    private String topic;
-    private ReadySchedule readySchedule;
     private User user;
+    private ReadySchedule readySchedule;
+    private Long topicItemOffset;
+    private boolean sentStatus;
 }

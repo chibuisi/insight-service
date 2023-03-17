@@ -12,7 +12,8 @@ public class TestThings {
         ScheduleType scheduleType = ScheduleType.DAILY;
         List<ScheduleType> scheduleTypes = new ArrayList<>(
                 Arrays.asList(ScheduleType.DAILY,ScheduleType.MONTHLY, ScheduleType.WEEKLY));
-        scheduleTypes.removeIf(e -> e.equals(scheduleType));
+        //scheduleTypes.removeIf(e -> e.equals(scheduleType));
+        scheduleTypes.forEach(e -> scheduleTypes.remove(e));
         System.out.println(scheduleTypes);
     }
 }

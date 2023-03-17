@@ -1,5 +1,6 @@
 package com.chibuisi.dailyinsightservice.mail.service.serviceimpl;
 
+import com.chibuisi.dailyinsightservice.mail.model.SentMail;
 import com.chibuisi.dailyinsightservice.mail.model.TemplateHelper;
 import com.chibuisi.dailyinsightservice.pubsub.service.PubSubMessagingGateways;
 import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
@@ -32,23 +33,22 @@ public class JavaMailService {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private ReadyScheduleService readyScheduleService;
+    private SentMailService sentMailService;
     @Value("${spring.application.name}")
     private String appName;
 
     @Async("sendMailThreadPoolTaskExecutor")
     public void sendMail(TemplateHelper templateHelper){
-        System.out.println("Sending to: "+ templateHelper.getUser().getEmail()+", Thread "+ Thread.currentThread().getName());
-        ReadySchedule readySchedule = templateHelper.getReadySchedule();
+        String email = templateHelper.getUser().getEmail();
+        System.out.println("Sending to: "+ email +", Thread "+ Thread.currentThread().getName());
         MimeMessage mimeMessage = getMimeMessage(templateHelper);
         try{
             javaMailSender.send(mimeMessage);
-            readySchedule.setStatus(ReadyScheduleStatus.SENT);
-            readySchedule.setDateSent(LocalDateTime.now());
-            readyScheduleService.saveReadySchedule(readySchedule);
+            templateHelper.setSentStatus(true);
+            sentMailService.saveSentReadySchedule(templateHelper);
         }catch (Exception e){
-            readySchedule.setStatus(ReadyScheduleStatus.UNSENT);
-            readyScheduleService.saveReadySchedule(readySchedule);
+            templateHelper.setSentStatus(false);
+            sentMailService.saveSentReadySchedule(templateHelper);
         }
     }
 
@@ -63,8 +63,8 @@ public class JavaMailService {
             String scheduleType = templateHelper.getNewsletter().getFrequencyType().toLowerCase();
             String firstLetter = scheduleType.charAt(0)+"";
             scheduleType = firstLetter.toUpperCase() + scheduleType.substring(1);
-                    mimeMessageHelper.setSubject("Hi " + templateHelper.getUser()
-                    .getFirstname()+", Your "+ scheduleType +" Newsletter is Here");
+                    mimeMessageHelper.setSubject("Hi " + templateHelper.getUser().getFirstname()
+                    +", Your "+ scheduleType +" Newsletter is Here");
             //mimeMessageHelper.addAttachment("logo.png", new ClassPathResource("logo.png"));
 
             mimeMessageHelper.setText(templateHelper.getHtmlTemplate(), true);
@@ -74,7 +74,6 @@ public class JavaMailService {
         }
         return mimeMessage;
     }
-
 
     public void queueTemplate(TemplateHelper templateHelper){
         try {

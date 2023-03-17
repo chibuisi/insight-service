@@ -95,9 +95,6 @@ create TemplateHelper
 select monthly schedule by day
 synchronize default, daily, weekly and monthly schedules
 update sent column on ready schedule
-
-
-Doing
 require a user for creating custom schedules
 save sent mails on a mail table
 model topic item and user offset relationship
@@ -105,6 +102,11 @@ add a table to save user topic item offsets
 add an offsetSequence to topic item table
 select topic item by user offset
 update user offset
+
+
+Doing
+upload topic items using csv file controller.
+download topic item csv template controller
 
 
 Challenges faced

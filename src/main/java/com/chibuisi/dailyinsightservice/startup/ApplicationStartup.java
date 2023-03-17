@@ -29,26 +29,26 @@ implements ApplicationListener<ApplicationReadyEvent> {
 
   private void publishPubSubMessage(){
     ReadySchedule readySchedule1 = ReadySchedule.builder()
-            .id(1L).userId(5L).topic(SupportedTopics.COMPANY)
+            .id(1L).userId(1L).topic(SupportedTopics.WORD)
             .status(ReadyScheduleStatus.PROCESSED)
             .dateProcessed(LocalDateTime.now())
-            .scheduleType(ScheduleType.DAILY).time(20).timezone("mst")
+            .scheduleType(ScheduleType.DAILY).time(8).timezone("mst")
             .build();
     ReadySchedule readySchedule2 = ReadySchedule.builder()
-            .id(2L).userId(6L).topic(SupportedTopics.COMPANY)
+            .id(2L).userId(2L).topic(SupportedTopics.COMPANY)
             .status(ReadyScheduleStatus.PROCESSED)
             .dateProcessed(LocalDateTime.now())
             .scheduleType(ScheduleType.DAILY).time(20).timezone("mst")
             .build();
     ReadySchedule readySchedule3 = ReadySchedule.builder()
-            .id(3L).userId(7L).topic(SupportedTopics.COMPANY)
+            .id(3L).userId(3L).topic(SupportedTopics.COMPANY)
             .status(ReadyScheduleStatus.PROCESSED)
             .dateProcessed(LocalDateTime.now())
             .scheduleType(ScheduleType.DAILY).time(20).timezone("mst")
             .build();
     hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule1);
-    hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule2);
-    hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule3);
+    //hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule2);
+    //hourlyScheduleHelper.publishReadyScheduleToPubSub(readySchedule3);
   }
 
 }

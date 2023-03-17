@@ -13,6 +13,7 @@ public class CustomAsyncExceptionHandler implements AsyncUncaughtExceptionHandle
             Throwable throwable, Method method, Object... obj) {
 
         System.out.println("Exception message - " + throwable.getMessage());
+        System.out.println("Exception message - " + throwable.getCause());
         System.out.println("Method name - " + method.getName());
         for (Object param : obj) {
             System.out.println("Parameter value - " + param);

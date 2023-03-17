@@ -7,6 +7,7 @@ import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService
 import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
 import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
+import com.chibuisi.dailyinsightservice.topic.model.UserTopicItemOffset;
 import com.chibuisi.dailyinsightservice.topic.service.TopicItemServiceImpl;
 import com.chibuisi.dailyinsightservice.user.model.User;
 import com.chibuisi.dailyinsightservice.user.service.UserService;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class TemplateService {
@@ -29,10 +32,27 @@ public class TemplateService {
     private UserService userService;
     @Autowired
     private JavaMailService javaMailService;
+
+    @Transactional
     public void createTemplate(ReadySchedule readySchedule){
         User user = userService.getUserById(readySchedule.getUserId());
+        if(user == null)
+            return;
         SupportedTopics topic = SupportedTopics.of(readySchedule.getTopic().getName());
-        TopicItem topicItem = topicItemService.findByDateTag();
+        if(topic == null)
+            return;
+        Long userTopicItemOffset = getUserTopicItemOffset(user, topic);
+        if(userTopicItemOffset == null)
+            return;
+        Optional<TopicItem> optionalTopicItem = topicItemService.get(userTopicItemOffset);
+        TopicItem.builder().build();
+        TopicItem topicItem;
+        if(!optionalTopicItem.isPresent())
+            topicItem = topicItemService.findByLatestTag();
+        else
+            topicItem = optionalTopicItem.get();
+        if(topicItem == null)
+            topicItem = topicItemService.findByDateTag();
         Article article = Article.builder()
                 .topic(readySchedule.getTopic()).topicItem(topicItem).build();
         Newsletter newsletter = Newsletter.builder()
@@ -47,9 +67,38 @@ public class TemplateService {
             e.printStackTrace();
         }
         TemplateHelper templateHelper = TemplateHelper.builder()
-                .htmlTemplate(htmlTemplate).user(user).readySchedule(readySchedule)
-                .newsletter(newsletter).topic(topic.getName()).build();
+                .topicItemOffset(userTopicItemOffset)
+                .htmlTemplate(htmlTemplate)
+                .newsletter(newsletter)
+                .user(user)
+                .readySchedule(readySchedule).build();
         javaMailService.queueTemplate(templateHelper);
+        updateUserTopicItemOffset(user, topic, userTopicItemOffset+1);
+        userService.updateUser(user);
+    }
+
+    private Long getUserTopicItemOffset(User user, SupportedTopics topic){
+        Long offset = user.getUserTopicItemOffsets()
+                .stream()
+                .filter(e -> e.getUserId().equals(user.getId()))
+                .findFirst().get().getTopicItemOffset();
+        return offset;
+    }
+
+    private User updateUserTopicItemOffset(User user, SupportedTopics topic, Long offset){
+        if(user == null || user.getUserTopicItemOffsets() == null)
+            return user;
+        Optional<UserTopicItemOffset> existing = user.getUserTopicItemOffsets()
+                .stream()
+                .filter(e -> e.getUserId().equals(user.getId()) && e.getTopic().equals(topic))
+                .findFirst();
+        if(!existing.isPresent())
+            return user;
+        user.getUserTopicItemOffsets()
+                .stream()
+                .filter(e -> e.getUserId().equals(user.getId()) && e.getTopic().equals(topic))
+                .findFirst().get().setTopicItemOffset(offset);
+        return user;
     }
 
 }

@@ -9,6 +9,11 @@ import com.chibuisi.dailyinsightservice.schedules.repository.DefaultScheduleRepo
 import com.chibuisi.dailyinsightservice.schedules.repository.MonthlyCustomScheduleRepository;
 import com.chibuisi.dailyinsightservice.schedules.repository.WeeklyCustomScheduleRepository;
 import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.UserTopicItemOffset;
+import com.chibuisi.dailyinsightservice.user.model.User;
+import com.chibuisi.dailyinsightservice.user.service.UserService;
+import com.chibuisi.dailyinsightservice.usersubscription.model.Subscription;
+import com.chibuisi.dailyinsightservice.usersubscription.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +38,23 @@ public class ScheduleService {
     private WeeklyCustomScheduleRepository weeklyCustomScheduleRepository;
     @Autowired
     private MonthlyCustomScheduleRepository monthlyCustomScheduleRepository;
+    @Autowired
+    private SubscriptionService subscriptionService;
+    @Autowired
+    private UserService userService;
     private String timezone = "MST";
 
     @Transactional
     public Schedule saveSchedule(ScheduleDTO scheduleDTO){
-        scheduleDTO.setTime(getTimeInMST(scheduleDTO.getTime(), scheduleDTO.getTimezone()));
+        User user = userService.getUserById(scheduleDTO.getUserId());
+        if(user == null)
+            return DefaultSchedule.builder().build();
         SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
+        Subscription subscription =
+                subscriptionService.getSubscriptionInfo(user.getEmail(), topic.getName());
+        if(subscription == null)
+            return DefaultSchedule.builder().build();
+        scheduleDTO.setTime(getTimeInMST(scheduleDTO.getTime(), scheduleDTO.getTimezone()));
         Schedule schedule = getScheduleInstance(scheduleDTO);
         if(schedule instanceof DailyCustomSchedule){
             synchronizeAllScheduleTable(scheduleDTO);
@@ -49,11 +65,15 @@ public class ScheduleService {
                 existing.setTime(scheduleDTO.getTime());
                 existing.setFrequency(scheduleDTO.getFrequency());
                 existing.setFrequencyCounter(scheduleDTO.getFrequency());
-                return dailyCustomScheduleRepository.save(existing);
+                existing = dailyCustomScheduleRepository.save(existing);
+                createUserTopicItemOffset(user, topic);
+                return existing;
             }
             DailyCustomSchedule dailyCustomSchedule = (DailyCustomSchedule) schedule;
             dailyCustomSchedule.setStatus(ScheduleStatus.ACTIVE);
-            return dailyCustomScheduleRepository.save(dailyCustomSchedule);
+            dailyCustomSchedule = dailyCustomScheduleRepository.save(dailyCustomSchedule);
+            createUserTopicItemOffset(user, topic);
+            return dailyCustomSchedule;
         }
         else if(schedule instanceof WeeklyCustomSchedule){
             synchronizeAllScheduleTable(scheduleDTO);
@@ -66,12 +86,16 @@ public class ScheduleService {
                 existing.setFrequency(scheduleDTO.getFrequency());
                 existing.setFrequencyCounter(scheduleDTO.getFrequency());
                 existing.setScheduleDay(scheduleDay);
-                return weeklyCustomScheduleRepository.save(existing);
+                existing = weeklyCustomScheduleRepository.save(existing);
+                createUserTopicItemOffset(user, topic);
+                return existing;
             }
             WeeklyCustomSchedule newInstance = (WeeklyCustomSchedule) schedule;
             newInstance.setScheduleDay(scheduleDay);
             newInstance.setStatus(ScheduleStatus.ACTIVE);
-            return weeklyCustomScheduleRepository.save(newInstance);
+            newInstance = weeklyCustomScheduleRepository.save(newInstance);
+            createUserTopicItemOffset(user, topic);
+            return newInstance;
         }
         else if(schedule instanceof MonthlyCustomSchedule){
             synchronizeAllScheduleTable(scheduleDTO);
@@ -84,7 +108,7 @@ public class ScheduleService {
                 existing.setFrequency(scheduleDTO.getFrequency());
                 existing.setFrequencyCounter(scheduleDTO.getFrequency());
                 existing.setDay(day);
-                return monthlyCustomScheduleRepository.save(existing);
+                existing = monthlyCustomScheduleRepository.save(existing);
             }
             MonthlyCustomSchedule monthlyCustomSchedule = (MonthlyCustomSchedule) schedule;
             monthlyCustomSchedule.setDay(day);
@@ -97,7 +121,9 @@ public class ScheduleService {
             if(existing == null) {
                 DefaultSchedule defaultSchedule = (DefaultSchedule) schedule;
                 defaultSchedule.setStatus(ScheduleStatus.ACTIVE);
-                return defaultScheduleRepository.save(defaultSchedule);
+                existing = defaultScheduleRepository.save(defaultSchedule);
+                createUserTopicItemOffset(user, topic);
+                return existing;
             }
             return existing;
         }
@@ -426,6 +452,25 @@ public class ScheduleService {
             sum+=monthlyCustomScheduleRepository.updateFrequencyCounter(i, i-1);
         }
         return sum;
+    }
+
+    private void createUserTopicItemOffset(User user, SupportedTopics topic){
+        UserTopicItemOffset userTopicItemOffset = UserTopicItemOffset
+                .builder().topicItemOffset(1L)
+                .userId(user.getId()).topic(topic).build();
+        if(user.getUserTopicItemOffsets() == null){
+            user.getUserTopicItemOffsets().add(userTopicItemOffset);
+        }
+        else{
+            Optional<UserTopicItemOffset> existingUserTopicItemOffset = user.getUserTopicItemOffsets()
+                    .stream()
+                    .filter(e -> e.getUserId().equals(user.getId()) && e.getTopic().equals(topic))
+                    .findFirst();
+            if(!existingUserTopicItemOffset.isPresent()){
+                user.getUserTopicItemOffsets().add(userTopicItemOffset);
+            }
+        }
+        userService.updateUser(user);
     }
 
     /*private List<Schedule> saveWeeklySchedules(){

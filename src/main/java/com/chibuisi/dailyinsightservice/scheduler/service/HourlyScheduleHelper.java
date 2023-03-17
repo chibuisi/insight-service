@@ -39,6 +39,12 @@ public class HourlyScheduleHelper {
         System.out.println("Saving Ready Schedule to Database: "+ Thread.currentThread().getName());
         readyScheduleService.saveReadySchedules(readySchedules);
     }
+    @Async("saveReadyScheduleThreadPoolTaskExecutor")
+    @Transactional
+    void saveReadySchedule(ReadySchedule readySchedule){
+        System.out.println("Saving Ready Schedule to Database: "+ Thread.currentThread().getName());
+        readyScheduleService.saveReadySchedule(readySchedule);
+    }
 
 
 }

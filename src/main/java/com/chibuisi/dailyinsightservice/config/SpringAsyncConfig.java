@@ -33,6 +33,7 @@ public class SpringAsyncConfig implements AsyncConfigurer {
         threadPoolTaskExecutor.setCorePoolSize(1000);
         threadPoolTaskExecutor.setMaxPoolSize(2000000);
         threadPoolTaskExecutor.setQueueCapacity(2000000);
+
         threadPoolTaskExecutor.setThreadNamePrefix("pubsub-publish-task-exec-");
         threadPoolTaskExecutor.initialize();
         return threadPoolTaskExecutor;

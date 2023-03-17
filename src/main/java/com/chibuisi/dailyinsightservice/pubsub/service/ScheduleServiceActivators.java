@@ -47,12 +47,12 @@ public class ScheduleServiceActivators {
     public void scheduleMessageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
         //LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
         String payload = (String) message.getPayload();
+        BasicAcknowledgeablePubsubMessage originalMessage =
+                message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
+        originalMessage.ack();
         ReadySchedule readySchedule = objectMapper.readValue(message.getPayload().toString(),
                ReadySchedule.class);
         //System.out.println(readySchedule);
         templateService.createTemplate(readySchedule);
-        BasicAcknowledgeablePubsubMessage originalMessage =
-                    message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
-            originalMessage.ack();
     }
 }
