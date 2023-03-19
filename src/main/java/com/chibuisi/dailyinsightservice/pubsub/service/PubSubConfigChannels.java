@@ -8,6 +8,7 @@ import com.google.cloud.spring.pubsub.integration.inbound.PubSubMessageSource;
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.InboundChannelAdapter;
@@ -25,6 +26,8 @@ import org.springframework.messaging.MessageHandler;
 @IntegrationComponentScan
 public class PubSubConfigChannels {
 
+    @Value("${app.project.subscriptions.path}")
+    private String subscriptionsPath;
     @Bean
     public MessageChannel inputMessageChannel() {
         return new PublishSubscribeChannel();
@@ -51,7 +54,7 @@ public class PubSubConfigChannels {
     @InboundChannelAdapter(value = "inputScheduleChannel", poller = @Poller(fixedDelay = "0", maxMessagesPerPoll = "1000"))
     public MessageSource<Object> synchronousPubSubMessageSource(PubSubTemplate pubSubTemplate) {
         PubSubMessageSource messageSource = new PubSubMessageSource(pubSubTemplate,
-                "projects/is-daily-insights-dev/subscriptions/schedulesubscription");
+                subscriptionsPath+"schedulesubscription");
         messageSource.setAckMode(AckMode.MANUAL);
         messageSource.setPayloadType(String.class);
         messageSource.setMaxFetchSize(5000);
@@ -61,7 +64,7 @@ public class PubSubConfigChannels {
     @InboundChannelAdapter(value = "inputEmailChannel", poller = @Poller(fixedDelay = "0", maxMessagesPerPoll = "1000"))
     public MessageSource<Object> synchronousEmailMimeMessageSource(PubSubTemplate pubSubTemplate) {
         PubSubMessageSource messageSource = new PubSubMessageSource(pubSubTemplate,
-                "projects/is-daily-insights-dev/subscriptions/emailsubscription");
+                subscriptionsPath+"emailsubscription");
         messageSource.setAckMode(AckMode.MANUAL);
         messageSource.setPayloadType(String.class);
         messageSource.setMaxFetchSize(5000);

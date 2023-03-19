@@ -47,7 +47,7 @@ public class HourlySchedulers {
             scheduleService.saveDefaultSchedules(defaultSchedules);
         }
     }
-    @Scheduled(cron = "0 0/54 1-23 * * *")//every hour except 00:00AM
+    @Scheduled(cron = "0 0/18 1-23 * * *")//every hour except 00:00AM
     public void everyHourForDailyTableScheduler(){
         System.out.println("everyHourForDailyTableScheduler: " + Thread.currentThread().getName());
         List<DailyCustomSchedule> dailyCustomSchedules =

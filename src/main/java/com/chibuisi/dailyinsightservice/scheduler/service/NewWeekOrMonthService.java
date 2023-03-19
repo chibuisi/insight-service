@@ -7,6 +7,7 @@ import com.chibuisi.dailyinsightservice.schedules.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.WeekFields;
 import java.util.List;
@@ -31,6 +32,7 @@ public class NewWeekOrMonthService {
         return newWeekOrMonthRepository.getNewWeekOrMonthByName(weekOrMonth);
     }
 
+    @Transactional
     public int checkForNewWeek(){
         LocalDateTime localDateTime = LocalDateTime.now();
         WeekFields weekFields = WeekFields.of(Locale.getDefault());

@@ -105,8 +105,21 @@ update user offset
 
 
 Doing
+api for adding list of topic items
 upload topic items using csv file controller.
 download topic item csv template controller
+add transaction for new week or month updates
+test new week or month
+security
+UI topic item (type out or download/upload csv)
+UI subscribe
+UI topics and coaches
+UI coach
+
+Todo
+security, recaptcha, sql injection scans
+use app engine for deployment, cloud sql for db, pubsub for queue
+use sendgrid for email 19.99
 
 
 Challenges faced
