@@ -1,3 +1,2 @@
-create database if not exists dailyinsights;
-use dailyinsights;
-show databases;
+create database if not exists minorinsights;
+#use minorinsights;

@@ -17,8 +17,11 @@ def create_topic(project_id: str, topic_id: str) -> None:
     project_id = project_id
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)
-    topic = publisher.create_topic(request={"name": topic_path})
-    print(f"Created topic: {topic.name}")
+    try:
+        topic = publisher.create_topic(request={"name": topic_path})
+        print(f"Created topic: {topic.name}")
+    except:
+        print(topic_id+" already exists")
 
 
 def list_subscriptions(project_id: str) -> None:
@@ -36,16 +39,18 @@ def create_subscription(project_id: str, topic_id: str, subscription_id: str) ->
     project_id = project_id
     topic_id = topic_id
     subscription_id = subscription_id
-
     publisher = pubsub_v1.PublisherClient()
     subscriber = pubsub_v1.SubscriberClient()
     topic_path = publisher.topic_path(project_id, topic_id)
     subscription_path = subscriber.subscription_path(project_id, subscription_id)
-    with subscriber:
-        subscription = subscriber.create_subscription(
-            request={"name": subscription_path, "topic": topic_path}
-        )
-    print(f"Subscription created: {subscription}")
+    try:
+        with subscriber:
+            subscription = subscriber.create_subscription(
+                request={"name": subscription_path, "topic": topic_path}
+            )
+        print(f"Subscription created: {subscription}")
+    except:
+        print(subscription_id+" already exists")
 
 
 def receive_messages(project_id: str, subscription_id: str, timeout: Optional[float] = None) -> None:
