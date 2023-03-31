@@ -28,4 +28,8 @@ public class TopicItem {
     private List<TopicItemProperties> topicItemProperties;
     private String tag;
     private String dateTag;
+    private Long offset;
+//    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "itemId")
+//    private PickOffset pickOffset;
 }

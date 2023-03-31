@@ -14,7 +14,7 @@ public class TopicItemTemplateService {
     @Autowired
     private TopicItemKeyService topicItemKeyService;
 
-    public ByteArrayInputStream load(String topic) {
+    public ByteArrayInputStream loadTopicItemKeys(String topic) {
         List<TopicItemKey> tutorials = topicItemKeyService.getTopicItemKeys(topic);
 
         ByteArrayInputStream in = ExcelHelper.topicItemKeysToExcel(tutorials);

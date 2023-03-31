@@ -17,8 +17,8 @@ public class NewWeekOrMonth {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private WeekOrMonth name;
+    //@Column(unique = true)
+    private String name;
     private Integer last;
     private Integer current;
 }

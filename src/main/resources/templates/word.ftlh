@@ -242,15 +242,49 @@
                                     <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                                         <tbody>
                                         <tr>
-                                            <td style="overflow-wrap:break-word;word-break:break-word;padding:33px 55px;font-family:'Cabin',sans-serif;" align="left">
+                                            <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;" align="left">
+
+                                                <table height="0px" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;border-top: 1px solid #BBBBBB;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
+                                                    <tbody>
+                                                    <tr style="vertical-align: top">
+                                                        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;font-size: 0px;line-height: 0px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
+                                                            <span>&#160;</span>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                        <tbody>
+                                        <tr>
+                                            <td style="overflow-wrap:break-word;word-break:break-word;padding:33px 55px 20px;font-family:'Cabin',sans-serif;" align="left">
 
                                                 <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
-                                                    <p style="font-size: 14px; line-height: 160%; text-align: left;"><span style="font-size: 26px; line-height: 41.6px;"><strong><span style="line-height: 41.6px;">Title: ${title}</span></strong>
-                                  </span>
+                                                    <p style="font-size: 14px; line-height: 160%; text-align: left;">
+                                                        <span style="font-size: 26px; line-height: 41.6px;">
+                                                            <strong>
+                                                                <span style="line-height: 41.6px;">Title: ${title}
+                                                                </span>
+                                                            </strong>
+                                                        </span>
                                                     </p>
-                                                    <p style="font-size: 14px; line-height: 160%; text-align: left;"><span style="font-size: 16px; line-height: 25.6px;">Meaning: ${properties.meaning}</span></p>
+                                                    <p style="font-size: 14px; line-height: 160%; text-align: left;">
+                                                        <span style="font-size: 16px; line-height: 25.6px;">
+                                                            <b>Meaning: </b>${properties.meaning}
+                                                        </span>
+                                                        <br/><br/>
+                                                        <#list itemKeys as itemKey>
+                                                            <span style="font-size: 16px; line-height: 25.6px;">
+                                                                <b>${itemKey.key}:</b> ${itemKey.value}<br/><br/>
+                                                            </span>
+                                                        </#list>
+                                                    </p>
                                                 </div>
-
                                             </td>
                                         </tr>
                                         </tbody>
@@ -302,7 +336,7 @@
 
                                                 <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
                                                     <p style="line-height: 160%; font-size: 14px;"><span style="font-size: 18px; line-height: 28.8px;">Thanks,</span></p>
-                                                    <p style="line-height: 160%; font-size: 14px;"><span style="font-size: 18px; line-height: 28.8px;">The Minor InsightsTeam</span></p>
+                                                    <p style="line-height: 160%; font-size: 14px;"><span style="font-size: 18px; line-height: 28.8px;">The Minor Insights Team</span></p>
                                                 </div>
 
                                             </td>
@@ -343,7 +377,7 @@
                                                 <div style="color: #003399; line-height: 160%; text-align: center; word-wrap: break-word;">
                                                     <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 20px; line-height: 32px;"><strong>Get in touch</strong></span></p>
                                                     <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 16px; line-height: 25.6px; color: #000000;">+1 641 451 3078</span></p>
-                                                    <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 16px; line-height: 25.6px; color: #000000;">Info@minor-insights.com</span></p>
+                                                    <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 16px; line-height: 25.6px; color: #000000;">info@minor-insights.com</span></p>
                                                 </div>
 
                                             </td>
@@ -472,7 +506,7 @@
                                             <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;" align="left">
 
                                                 <div style="color: #fafafa; line-height: 180%; text-align: center; word-wrap: break-word;">
-                                                    <p style="font-size: 14px; line-height: 180%;"><span style="font-size: 16px; line-height: 28.8px;">© Minor Insights 2023</span></p>
+                                                    <p style="font-size: 14px; line-height: 180%;"><span style="font-size: 16px; line-height: 28.8px;">&copy; Minor Insights 2023</span></p>
                                                 </div>
 
                                             </td>
@@ -483,11 +517,11 @@
                                     <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                                         <tbody>
                                         <tr>
-                                            <td style="overflow-wrap:break-word;word-break:break-word;padding:41px 55px 18px;font-family:'Cabin',sans-serif;" align="left">
+                                            <td style="overflow-wrap:break-word;word-break:break-word;padding:11px 55px 18px;font-family:'Cabin',sans-serif;" align="left">
 
                                                 <div style="color: #ffffff; line-height: 160%; text-align: center; word-wrap: break-word;">
-                                                    <p style="font-size: 14px; line-height: 160%; text-align: justify;">This is an automated newsletter was sent to ${email} because you are subscribed, please do not reply to this mailbox. This message was sent to other subscribers. If you have received it in error, please delete or contact
-                                                        us at info@minor-insights.com. To un-subscribe from this newsletter click <span style="color: #ffffff; line-height: 22.4px;"><a rel="noopener" href="http://localhost:8080/subscription/unsubscribe" target="_blank" style="color: #ffffff;">here</a></span></p>
+                                                    <p style="font-size: 14px; line-height: 160%; text-align: justify;">This is an automated newsletter was sent to <span style="color:#ffffff;"><a href="#" style="color: #ffffff">${email}</a></span> because you are subscribed, please do not reply to this mailbox. This message was sent to other subscribers. If you have received it in error, please delete or contact
+                                                        us at <span style="color:#ffffff;"><a href="#" style="color: #ffffff">info@minor-insights.com</a></span>. To un-subscribe from this newsletter click <span style="color: #ffffff; line-height: 22.4px;"><a rel="noopener" href="http://localhost:8080/subscription/unsubscribe" target="_blank" style="color: #ffffff;">here</a></span></p>
                                                 </div>
 
                                             </td>

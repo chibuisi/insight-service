@@ -1,11 +1,18 @@
 package com.chibuisi.dailyinsightservice.topic.controller;
 
+import com.chibuisi.dailyinsightservice.template.TopicItemTemplateService;
+import com.chibuisi.dailyinsightservice.topic.dto.TopicItemResponseDTO;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
 import com.chibuisi.dailyinsightservice.topic.service.TopicItemService;
+import com.chibuisi.dailyinsightservice.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,25 +21,78 @@ import java.util.List;
 public class TopicItemController {
     @Autowired
     private TopicItemService topicItemService;
+    @Autowired
+    private TopicItemTemplateService topicItemTemplateService;
 
     @PostMapping
     public ResponseEntity save(@RequestBody TopicItem topicItem){
         return new ResponseEntity(topicItemService.save(topicItem), HttpStatus.OK);
     }
 
-    @GetMapping("/topic/{topicName}")
-    public List<TopicItem> getTopicItemsByTopicName(@PathVariable String topicName){
-        return topicItemService.getTopicItems(topicName).orElse(null);
+    @GetMapping
+    public ResponseEntity getTopicItem(@RequestParam String topic,
+                                  @RequestParam String title) {
+        return new ResponseEntity(topicItemService.getTopicItemByTopicAndTitle(topic, title),
+                HttpStatus.OK);
     }
 
-    @GetMapping
-    public TopicItem getTopicItem(@RequestParam(required = false) String topicItemName,
-                                  @RequestParam(required = false) Long topicItemId){
+    @PostMapping("/list/{topicName}")
+    public ResponseEntity saveTopicItemList(@RequestBody List<TopicItem> topicItems, @PathVariable String topicName){
+        TopicItemResponseDTO responseDTO = topicItemService.saveTopicItemList(topicItems, topicName);
+        if(responseDTO.getDuplicateTopicItems().size() > 0)
+            return new ResponseEntity(responseDTO, HttpStatus.CONFLICT);
+        return new ResponseEntity(responseDTO, HttpStatus.CREATED);
+    }
+
+    // TODO: 3/26/2023 paginate this endpoint
+    @GetMapping("/list/topic/{topicName}")
+    public ResponseEntity getTopicItemsByTopic(@PathVariable String topicName){
+        return new ResponseEntity(topicItemService.getTopicItems(topicName).orElse(null),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity search(@RequestParam(required = false) String title,
+                                  @RequestParam(required = false) Long itemId){
         TopicItem foundTopicItem = null;
-        if(topicItemName != null && topicItemName.length() > 0)
-            foundTopicItem = topicItemService.get(topicItemName).orElse(null);
+        if(title != null && title.length() > 0)
+            foundTopicItem = topicItemService.get(title).orElse(null);
         else
-            foundTopicItem = topicItemService.get(topicItemId).orElse(null);
-        return foundTopicItem;
+            foundTopicItem = topicItemService.get(itemId).orElse(null);
+        if (foundTopicItem == null)
+            return new ResponseEntity("Not found", HttpStatus.NOT_FOUND);
+        return new ResponseEntity(foundTopicItem, HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity updateTopicItem(@RequestBody TopicItem topicItem){
+        return new ResponseEntity(topicItemService.update(topicItem), HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteTopicItem(@RequestParam String topic,
+                                          @RequestParam String title){
+        topicItemService.deleteTopicItem(topic, title);
+        return new ResponseEntity("Deleted",HttpStatus.OK);
+    }
+
+    @GetMapping("/template/download/{topic}")
+    public ResponseEntity getFile(@PathVariable String topic) {
+        InputStreamResource file = new InputStreamResource(topicItemTemplateService.loadTopicItemKeys(topic));
+        String filename = topic+".xlsx";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(file);
+    }
+
+    @PostMapping("/template/upload/{topic}")
+    public ResponseEntity saveFile(@RequestParam("file")MultipartFile file, @PathVariable String topic){
+        if(!ExcelHelper.hasExcelFormat(file))
+            return new ResponseEntity("Upload Valid Excel Format", HttpStatus.BAD_REQUEST);
+        TopicItemResponseDTO responseDTO = topicItemService.uploadFile(file, topic);
+        if(responseDTO.getDuplicateTopicItems().size() > 0)
+            return new ResponseEntity(responseDTO, HttpStatus.CONFLICT);
+        return new ResponseEntity(responseDTO, HttpStatus.CREATED);
     }
 }

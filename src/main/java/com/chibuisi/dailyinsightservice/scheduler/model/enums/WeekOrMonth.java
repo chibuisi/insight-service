@@ -1,12 +1,28 @@
 package com.chibuisi.dailyinsightservice.scheduler.model.enums;
 
 public enum WeekOrMonth {
-    WEEK("week"),
-    MONTH("month");
+    WEEK("W"),
+    MONTH("M");
 
-    private String value;
+    private Integer value;
+    private String code;
 
-    private WeekOrMonth(String value){
-        this.value = value;
+    private WeekOrMonth(String code){
+        this.code = code;
     }
+    private WeekOrMonth(){
+    }
+
+    public Integer getValue(){
+        return this.value;
+    }
+    public String getCode(){
+        return this.code;
+    }
+
+    @Override
+    public String toString() {
+        return this.name();
+    }
+
 }

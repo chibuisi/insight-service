@@ -12,8 +12,10 @@ import java.time.LocalDateTime;
 import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class NewWeekOrMonthService {
     @Autowired
     private NewWeekOrMonthRepository newWeekOrMonthRepository;
@@ -29,27 +31,32 @@ public class NewWeekOrMonthService {
     }
 
     public NewWeekOrMonth getNewWeekOrMonth(WeekOrMonth weekOrMonth){
-        return newWeekOrMonthRepository.getNewWeekOrMonthByName(weekOrMonth);
+        return newWeekOrMonthRepository.getNewWeekOrMonthByName(weekOrMonth.getCode());
     }
 
-    @Transactional
     public int checkForNewWeek(){
         LocalDateTime localDateTime = LocalDateTime.now();
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
         Integer thisWeekNum = localDateTime.get(weekFields.weekOfYear());
-        NewWeekOrMonth newWeekOrMonth = newWeekOrMonthRepository.getNewWeekOrMonthByName(WeekOrMonth.WEEK);
+        Optional<NewWeekOrMonth> optionalNewWeekOrMonth = newWeekOrMonthRepository.findNewWeekOrMonthByName(WeekOrMonth.WEEK.getCode());
+        NewWeekOrMonth newWeekOrMonth = null;
         int resultCount = 0;
-        //if week num > or < than current then update current to week num
-        if(thisWeekNum > newWeekOrMonth.getCurrent() || thisWeekNum < newWeekOrMonth.getCurrent()){
-            newWeekOrMonth.setCurrent(thisWeekNum);
-            updateNewWeekOrMonth(newWeekOrMonth);
-            resultCount = updateCounterFrequencyForWeeklySchedules(thisWeekNum);
+        if(optionalNewWeekOrMonth.isPresent()) {
+            newWeekOrMonth = optionalNewWeekOrMonth.get();
+            //if week num > or < than current then update current to week num
+            if(thisWeekNum > newWeekOrMonth.getCurrent() || thisWeekNum < newWeekOrMonth.getCurrent()){
+                newWeekOrMonth.setCurrent(thisWeekNum);
+                newWeekOrMonth.setLast(thisWeekNum-1);
+                //saveNewWeekOrMonth(newWeekOrMonth);
+                newWeekOrMonthRepository.updateFrequencyCounter(newWeekOrMonth.getName(), thisWeekNum);
+                resultCount = updateCounterFrequencyForWeeklySchedules(thisWeekNum);
+            }
+        }
+        else {
+            newWeekOrMonth = NewWeekOrMonth.builder().current(thisWeekNum).last(thisWeekNum-1).name("W").build();
+            saveNewWeekOrMonth(newWeekOrMonth);
         }
         return resultCount;
-    }
-
-    private void updateNewWeekOrMonth(NewWeekOrMonth newWeekOrMonth){
-        newWeekOrMonthRepository.save(newWeekOrMonth);
     }
 
     private int updateCounterFrequencyForWeeklySchedules(Integer freqCounterValue){
@@ -59,12 +66,20 @@ public class NewWeekOrMonthService {
     public int checkForNewMonth(){
         LocalDateTime localDateTime = LocalDateTime.now();
         Integer month = localDateTime.getMonthValue();
-        NewWeekOrMonth newWeekOrMonth = newWeekOrMonthRepository.getNewWeekOrMonthByName(WeekOrMonth.MONTH);
+        Optional<NewWeekOrMonth> optionalNewWeekOrMonth = newWeekOrMonthRepository.findNewWeekOrMonthByName(WeekOrMonth.MONTH.getCode());
+        NewWeekOrMonth newWeekOrMonth = null;
         int resultCount = 0;
-        if(month > newWeekOrMonth.getCurrent() || month < newWeekOrMonth.getCurrent()){
-            newWeekOrMonth.setCurrent(month);
-            updateNewWeekOrMonth(newWeekOrMonth);
-            resultCount = updateCounterFrequencyForMonthlySchedules(month);
+        if(optionalNewWeekOrMonth.isPresent()) {
+            newWeekOrMonth = optionalNewWeekOrMonth.get();
+            if(month > newWeekOrMonth.getCurrent() || month < newWeekOrMonth.getCurrent()){
+                newWeekOrMonth.setCurrent(month);
+                saveNewWeekOrMonth(newWeekOrMonth);
+                resultCount = updateCounterFrequencyForMonthlySchedules(month);
+            }
+        }
+        else {
+            newWeekOrMonth = NewWeekOrMonth.builder().current(month).last(month-1).name("M").build();
+            saveNewWeekOrMonth(newWeekOrMonth);
         }
         return resultCount;
     }

@@ -7,6 +7,7 @@ import com.chibuisi.dailyinsightservice.article.model.Newsletter;
 import com.chibuisi.dailyinsightservice.mail.model.TemplateHelper;
 import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
 import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
+import com.chibuisi.dailyinsightservice.template.model.ItemKey;
 import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItemProperties;
@@ -45,10 +46,9 @@ public class TemplateService {
         if(topic == null)
             return;
         Long userTopicItemOffset = getUserTopicItemOffset(user, topic);
-        if(userTopicItemOffset == null)
-            return;
-        Optional<TopicItem> optionalTopicItem = topicItemService.get(userTopicItemOffset);
-        TopicItem.builder().build();
+        Optional<TopicItem> optionalTopicItem = Optional.empty();
+        if(userTopicItemOffset != null)
+            optionalTopicItem = topicItemService.findTopicItemByOffset(userTopicItemOffset);
         TopicItem topicItem;
         if(!optionalTopicItem.isPresent())
             topicItem = topicItemService.findByLatestTag();
@@ -74,19 +74,19 @@ public class TemplateService {
             Template template = configuration
                     .getTemplate(TemplateUtil.getTemplateByTopicName(topic.getName().toLowerCase()));
             htmlTemplate = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+            templateHelper.setHtmlTemplate(htmlTemplate);
+            javaMailService.queueTemplate(templateHelper);
+            updateUserTopicItemOffset(user, topic, userTopicItemOffset+1);
+            userService.updateUser(user);
         } catch (IOException | TemplateException e) {
             e.printStackTrace();
         }
-        templateHelper.setHtmlTemplate(htmlTemplate);
-        javaMailService.queueTemplate(templateHelper);
-        updateUserTopicItemOffset(user, topic, userTopicItemOffset+1);
-        userService.updateUser(user);
     }
 
     private Long getUserTopicItemOffset(User user, SupportedTopics topic){
         Long offset = user.getUserTopicItemOffsets()
                 .stream()
-                .filter(e -> e.getUserId().equals(user.getId()))
+                .filter(e -> e.getUserId().equals(user.getId()) && e.getTopic().equals(topic))
                 .findFirst().get().getTopicItemOffset();
         return offset;
     }
@@ -116,14 +116,21 @@ public class TemplateService {
         Footer footer = newsletter.getFooter();
         TopicItem topicItem = article.getTopicItem();
         List<TopicItemProperties> topicItemProperties = topicItem.getTopicItemProperties();
-        Map<String, String> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         ReadySchedule readySchedule = templateHelper.getReadySchedule();
+        List<ItemKey> itemKeys = new ArrayList<>();
         model.put("topic", capitaliseFirstLetter(article.getTopic().getName()));
         model.put("title", capitaliseFirstLetter(topicItem.getTitle()));
         model.put("scheduleType", readySchedule.getScheduleType().getValue().toLowerCase());
         topicItemProperties.forEach(e -> {
-            properties.put(e.getPropertyKey(), e.getPropertyValue());
+            if(!e.getPropertyKey().equals("meaning")) {
+                ItemKey itemKey = ItemKey.builder().key(capitaliseFirstLetter(e.getPropertyKey()))
+                        .value(capitaliseFirstLetter(e.getPropertyValue())).build();
+                itemKeys.add(itemKey);
+            }
+            properties.put(e.getPropertyKey(), capitaliseFirstLetter(e.getPropertyValue()));
         });
+        model.put("itemKeys", itemKeys);
         model.put("properties", properties);
         model.put("topicItem", topicItem);
         model.put("firstname", user.getFirstname());

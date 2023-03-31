@@ -7,7 +7,9 @@ import com.chibuisi.dailyinsightservice.topic.repository.TopicItemKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TopicItemKeyService {
@@ -23,7 +25,19 @@ public class TopicItemKeyService {
     }
 
     public TopicItemKey saveTopicItemKey(TopicItemKey topicItemKey){
+        Optional<TopicItemKey> existing = topicItemKeyRepository
+                .findTopicItemKeyByKeyNameAndTopicId(topicItemKey.getKeyName(), topicItemKey.getTopicId());
+        if (existing.isPresent())
+            return existing.get();
         return topicItemKeyRepository.save(topicItemKey);
+    }
+
+    public List<TopicItemKey> saveTopicItemKeys(List<TopicItemKeyDTO> topicItemKeyDTOS){
+        List<TopicItemKey> topicItemKeys = new ArrayList<>();
+        topicItemKeyDTOS.forEach(e -> {
+            topicItemKeys.add(saveTopicItemKey(e));
+        });
+        return topicItemKeys;
     }
 
     public TopicItemKey saveTopicItemKey(TopicItemKeyDTO topicItemKeyDTO){

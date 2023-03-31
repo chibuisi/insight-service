@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface TopicItemKeyRepository extends JpaRepository<TopicItemKey, Long> {
     public Optional<TopicItemKey> getTopicItemKeyById(Integer id);
     public Optional<List<TopicItemKey>> findAllByTopicId(Integer topicId);
+    public Optional<TopicItemKey> findTopicItemKeyByKeyNameAndTopicId(String keyName, Integer topicId);
 }

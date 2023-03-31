@@ -102,19 +102,26 @@ add a table to save user topic item offsets
 add an offsetSequence to topic item table
 select topic item by user offset
 update user offset
+download topic item csv template controller
+add transaction for new week or month updates
+api for adding list of topic items
+upload topic items using csv file controller.
+test new week or month
 
 
 Doing
-api for adding list of topic items
-upload topic items using csv file controller.
-download topic item csv template controller
-add transaction for new week or month updates
-test new week or month
 security
+UI Skeleton (VueJS)
 UI topic item (type out or download/upload csv)
 UI subscribe
 UI topics and coaches
 UI coach
+add swagger
+paginate topic items
+throw and handle exceptions when not found (topic, topic item, user)
+update DTOs
+validate required fields for all services
+send a thank you note after subscription and after unsubscription
 
 Todo
 security, recaptcha, sql injection scans
@@ -125,6 +132,8 @@ use sendgrid for email 19.99
 Challenges faced
 1. I could not get unique constraint working on the field title. I solved it by
 2. Persisting enums to db - solution: created a converter.
+3. update new week or month could not work, had to write custom update query for it
+4. two persons uploading topic items at the same time will break db integrity
 
 
 Notes:

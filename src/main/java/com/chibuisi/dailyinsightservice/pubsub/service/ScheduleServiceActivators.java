@@ -34,7 +34,7 @@ public class ScheduleServiceActivators {
 
         adapter.setSuccessCallback(
                 ((ackId, message) ->
-                        LOGGER.info("Message was sent via the outbound channel adapter to email!")));
+                        LOGGER.info("Message was sent via the schedule outbound channel adapter to email pubsub topic!")));
 
         adapter.setFailureCallback(
                 (cause, message) -> LOGGER.info("Error sending " + message + " due to " + cause));
@@ -45,14 +45,12 @@ public class ScheduleServiceActivators {
     //Define what happens to the messages arriving in the message channel.
     @ServiceActivator(inputChannel = "inputScheduleChannel")
     public void scheduleMessageReceiver(Message<?> message) throws MessagingException, JsonProcessingException {
-        //LOGGER.info("Message arrived via an inbound channel! Payload: "+ message);
-        String payload = (String) message.getPayload();
+        LOGGER.info("ready schedule arrived via an schedule inbound channel!");
         BasicAcknowledgeablePubsubMessage originalMessage =
                 message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
         originalMessage.ack();
         ReadySchedule readySchedule = objectMapper.readValue(message.getPayload().toString(),
                ReadySchedule.class);
-        //System.out.println(readySchedule);
         templateService.createTemplate(readySchedule);
     }
 }
