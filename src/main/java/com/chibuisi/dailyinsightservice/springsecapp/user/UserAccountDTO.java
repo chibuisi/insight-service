@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +17,7 @@ public class UserAccountDTO {
     private String password;
     private String firstname;
     private String lastname;
+    private String ipAddress;
+    private String timezone;
+    private Boolean agreedToEula;
 }

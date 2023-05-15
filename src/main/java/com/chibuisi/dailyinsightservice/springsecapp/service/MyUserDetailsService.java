@@ -1,5 +1,6 @@
 package com.chibuisi.dailyinsightservice.springsecapp.service;
 
+import com.chibuisi.dailyinsightservice.exception.UserAlreadyExistException;
 import com.chibuisi.dailyinsightservice.springsecapp.model.AppRole;
 import com.chibuisi.dailyinsightservice.springsecapp.model.CustomUserDetails;
 import com.chibuisi.dailyinsightservice.springsecapp.model.Role;
@@ -7,12 +8,12 @@ import com.chibuisi.dailyinsightservice.springsecapp.model.UserAccount;
 import com.chibuisi.dailyinsightservice.springsecapp.repository.UserAccountRepository;
 import com.chibuisi.dailyinsightservice.springsecapp.user.UserAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -51,20 +52,25 @@ public class MyUserDetailsService implements UserDetailsService {
 	        .build();
 	}
 
-	public UserAccountDTO saveUserAccount(UserAccountDTO userAccountDTO){
+	public UserAccountDTO saveUserAccount(UserAccountDTO userAccountDTO) throws UserAlreadyExistException {
 		// todo validate userAccount against null values
 		Optional<UserAccount> existing = userRepository.findUserAccountByEmail(userAccountDTO.getEmail());
 		if(!existing.isPresent())
 			existing = userRepository.findUserAccountByUsername(userAccountDTO.getUsername());
 		if(existing.isPresent())
 			//todo handle this exception in a controller advice
-			throw new RuntimeException("User Already Exists");
+			throw new UserAlreadyExistException("Email already exists");
 		UserAccount userAccount = UserAccount.builder()
 				.email(userAccountDTO.getEmail())
 				.username(userAccountDTO.getUsername())
 				.firstName(userAccountDTO.getFirstname())
+
 				.lastName(userAccountDTO.getLastname())
 				.password(passwordEncoder.encode(userAccountDTO.getPassword()))
+				.agreedToEula(userAccountDTO.getAgreedToEula())
+				.dateJoined(LocalDateTime.now())
+				.ipAddress(userAccountDTO.getIpAddress())
+				.timezone(userAccountDTO.getTimezone())
 				.build();
 		AppRole appRole = appRoleService.findAppRole(Role.ROLE_USER);
 		if(appRole != null)
@@ -89,5 +95,9 @@ public class MyUserDetailsService implements UserDetailsService {
 				.firstname(userAccount.getFirstName())
 				.lastname(userAccount.getLastName()).build();
 		return Optional.of(userAccountDTO);
+	}
+
+	public Boolean checkUsernameAvailability(String username){
+		return userRepository.existsByUsername(username);
 	}
 }

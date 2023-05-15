@@ -14,17 +14,26 @@ public class UserAccountController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
     @PostMapping("/signup")
-    public UserAccountDTO saveUserAccount(@RequestBody UserAccountDTO userAccountDTO){
-        return myUserDetailsService.saveUserAccount(userAccountDTO);
+    public ResponseEntity<?> saveUserAccount(@RequestBody UserAccountDTO userAccountDTO){
+        return new ResponseEntity<>(myUserDetailsService.saveUserAccount(userAccountDTO), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<?> checkUsernameAvailability(@RequestParam String username){
+        boolean exist = myUserDetailsService.checkUsernameAvailability(username);
+        if(exist)
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity getUser(@RequestParam String user){
+    public ResponseEntity<?> getUser(@RequestParam String user){
         Optional<UserAccountDTO> userAccountDTO = myUserDetailsService.findUserByCredentials(user);
         if(!userAccountDTO.isPresent())
-            return new ResponseEntity("Not Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
         else
-            return new ResponseEntity(userAccountDTO, HttpStatus.OK);
+            return new ResponseEntity<>(userAccountDTO, HttpStatus.OK);
     }
 
     @GetMapping("/role")

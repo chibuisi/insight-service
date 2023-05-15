@@ -20,11 +20,11 @@ INSERT into role(id, role_name)
 select 4,'ROLE_DEVELOPER'
 where not exists(select id, role_name from role where id = 4 and role_name = 'ROLE_DEVELOPER');
 
-insert into user_account_roles(user_id, role_id)
-select 1,1
-where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 1);
-
 INSERT INTO user_account (id,email,username,firstname,lastname,password)
 SELECT 1,'ckamiaka2019@gmail.com', 'ckamiaka',
        'Chibuisi','Amiaka','$2a$12$ESK4BePk5B4cSek39pI3y.tGLeab1E0yqwFh30cY.r4l9BvcATH2e'
 WHERE NOT EXISTS (SELECT id FROM user_account WHERE id = 1);
+
+insert into user_account_roles(user_id, role_id)
+select 1,1
+where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 1);

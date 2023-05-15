@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,12 @@ public class UserAccount {
 
     @Column(name = "lastname", length = 216)
     private String lastName;
+
+    private LocalDateTime dateJoined;
+    @Column(name = "ipAddress", length = 216)
+    private String ipAddress;
+    private String timezone;
+    private Boolean agreedToEula;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
