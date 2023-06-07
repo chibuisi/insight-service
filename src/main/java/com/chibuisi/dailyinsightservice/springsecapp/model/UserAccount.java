@@ -50,4 +50,10 @@ public class UserAccount {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<AppRole> roles = new ArrayList<>();
+
+    @Column(name = "reset_token", length = 216)
+    private String resetToken;
+
+    @Column(name = "reset_token_validity")
+    private LocalDateTime resetTokenValidity;
 }

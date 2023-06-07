@@ -1,5 +1,6 @@
 package com.chibuisi.dailyinsightservice.mail.service.serviceimpl;
 
+import com.chibuisi.dailyinsightservice.mail.model.EmailTemplate;
 import com.chibuisi.dailyinsightservice.mail.model.TemplateHelper;
 import com.chibuisi.dailyinsightservice.pubsub.service.PubSubMessagingGateways;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class JavaMailService {
 
+    private static final String SENDER = "Minor Insights <chibuisi.test.dev@gmail.com>";
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
@@ -51,7 +53,7 @@ public class JavaMailService {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
                     MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
             mimeMessageHelper.setTo(templateHelper.getUser().getEmail());
-            mimeMessageHelper.setFrom("Minor Insights <chibuisi.test.dev@gmail.com>");
+            mimeMessageHelper.setFrom(SENDER);
             mimeMessageHelper.setSubject("Stay Informed With Insights");
             //mimeMessageHelper.addAttachment("logo.png", new ClassPathResource("logo.png"));
             mimeMessageHelper.setText(templateHelper.getHtmlTemplate(), true);
@@ -70,4 +72,27 @@ public class JavaMailService {
             e.printStackTrace();
         }
     }
+
+    public void sendEmail(EmailTemplate emailTemplate) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+
+        try{
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+            mimeMessageHelper.setTo(emailTemplate.getEmail());
+            mimeMessageHelper.setFrom(SENDER);
+            mimeMessageHelper.setSubject(emailTemplate.getSubject());
+            //mimeMessageHelper.addAttachment("logo.png", new ClassPathResource("logo.png"));
+            mimeMessageHelper.setText(emailTemplate.getTemplate(), true);
+        }
+        catch (MessagingException messagingException){
+            messagingException.printStackTrace();
+        }
+        try{
+            javaMailSender.send(mimeMessage);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }

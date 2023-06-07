@@ -1,5 +1,6 @@
 package com.chibuisi.dailyinsightservice.springsecapp.service;
 
+import com.chibuisi.dailyinsightservice.exception.AuthenticationFailedException;
 import com.chibuisi.dailyinsightservice.springsecapp.model.AuthenticationRequest;
 import com.chibuisi.dailyinsightservice.springsecapp.model.CustomUserDetails;
 import com.chibuisi.dailyinsightservice.springsecapp.util.JwtUtil;
@@ -40,8 +41,8 @@ public class AuthenticationService {
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsernameOrEmail(),
                             authenticationRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            log.info("Authentication processing failed");
-            throw new Exception("Invalid Username or Password",e);
+            log.info("Authentication processing failed: "+e.getMessage());
+            throw new AuthenticationFailedException("Invalid Username or Password",e);
         }
         //final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authenticationRequest.getUsernameOrEmail());
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();

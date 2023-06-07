@@ -79,13 +79,9 @@ public class MyUserDetailsService implements UserDetailsService {
 		return userAccountDTO;
 	}
 
-	public Optional<UserAccountDTO> findUserByCredentials(String emailOrEmail){
+	public Optional<UserAccountDTO> findUserByCredentials(String emailOrUsername){
 		UserAccount userAccount;
-		Optional<UserAccount> optionalExisting = userRepository
-				.findUserAccountByEmail(emailOrEmail);
-		if(!optionalExisting.isPresent())
-			optionalExisting = userRepository
-					.findUserAccountByUsername(emailOrEmail);
+		Optional<UserAccount> optionalExisting =getUserAccountFromEmailOrUsername(emailOrUsername);
 		if (!optionalExisting.isPresent())
 			return Optional.empty();
 		userAccount = optionalExisting.get();
@@ -97,7 +93,20 @@ public class MyUserDetailsService implements UserDetailsService {
 		return Optional.of(userAccountDTO);
 	}
 
+	public Optional<UserAccount> getUserAccountFromEmailOrUsername(String emailOrUsername) {
+		Optional<UserAccount> optionalExisting = userRepository
+				.findUserAccountByEmail(emailOrUsername);
+		if(!optionalExisting.isPresent())
+			optionalExisting = userRepository
+					.findUserAccountByUsername(emailOrUsername);
+		return optionalExisting;
+	}
+
 	public Boolean checkUsernameAvailability(String username){
 		return userRepository.existsByUsername(username);
+	}
+
+	public UserAccount saveUserAccount(UserAccount userAccount) {
+		return userRepository.save(userAccount);
 	}
 }

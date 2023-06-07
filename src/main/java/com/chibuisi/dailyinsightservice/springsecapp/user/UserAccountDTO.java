@@ -20,4 +20,5 @@ public class UserAccountDTO {
     private String ipAddress;
     private String timezone;
     private Boolean agreedToEula;
+
 }
