@@ -3,11 +3,13 @@ package com.chibuisi.dailyinsightservice.springsecapp.service;
 import com.chibuisi.dailyinsightservice.mail.model.EmailTemplate;
 import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
 import com.chibuisi.dailyinsightservice.springsecapp.model.ResetPasswordDTO;
+import com.chibuisi.dailyinsightservice.springsecapp.model.UpdatePasswordDTO;
 import com.chibuisi.dailyinsightservice.springsecapp.model.UserAccount;
 import com.chibuisi.dailyinsightservice.springsecapp.util.ResetPasswordTokenGenerator;
 import com.chibuisi.dailyinsightservice.template.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,8 @@ public class ResetPasswordService {
     private JavaMailService javaMailService;
     @Autowired
     private ResetPasswordTokenGenerator tokenGenerator;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private TemplateUtil templateUtil;
 
@@ -66,5 +70,27 @@ public class ResetPasswordService {
             javaMailService.sendEmail(emailTemplate);
         }
 
+    }
+
+    public boolean updatePassword(UpdatePasswordDTO updatePasswordDTO) {
+        final Optional<UserAccount> optionalUserAccountDTO =
+                userDetailsService.getUserAccountFromEmailOrUsername(updatePasswordDTO.getEmailOrUsername());
+        if(!optionalUserAccountDTO.isPresent())
+            return false;
+        UserAccount userAccount = optionalUserAccountDTO.get();
+
+        if(!userAccount.getResetToken().equals(updatePasswordDTO.getToken()))
+            return false;
+
+        LocalDateTime now = LocalDateTime.now();
+        if (userAccount.getResetTokenValidity().isBefore(now)) {
+            return false;
+        }
+
+        userAccount.setPassword(passwordEncoder.encode(updatePasswordDTO.getPassword()));
+
+        userDetailsService.saveUserAccount(userAccount);
+
+        return true;
     }
 }
