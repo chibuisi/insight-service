@@ -7,6 +7,7 @@ import com.chibuisi.dailyinsightservice.springsecapp.model.UserAccount;
 import com.chibuisi.dailyinsightservice.springsecapp.util.ResetPasswordTokenGenerator;
 import com.chibuisi.dailyinsightservice.template.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,10 +27,13 @@ public class ResetPasswordService {
     @Autowired
     private TemplateUtil templateUtil;
 
+    @Value("${application.ui.service-url}")
+    private String APPLICATION_UI_SERVICE_URL;
+
     private final String RESET_PASSWORD_TEMPLATE = "resetpassword";
-    private final String LINK = "http://localhost:10240/reset-Password";
 
     public void sendPasswordResetEmail(ResetPasswordDTO resetPasswordDTO) {
+        final String LINK = APPLICATION_UI_SERVICE_URL+"/update-password";
         final Optional<UserAccount> optionalUserAccountDTO =
                 userDetailsService.getUserAccountFromEmailOrUsername(resetPasswordDTO.getEmailOrUsername());
         if (optionalUserAccountDTO.isPresent()) {
