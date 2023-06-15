@@ -33,7 +33,7 @@ public class ResetPasswordResource {
 
         boolean result = resetPasswordService.updatePassword(updatePasswordDTO);
         if(result)
-            return new ResponseEntity<>("Success", HttpStatus.OK);
-        return new ResponseEntity<>("Failed", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        return new ResponseEntity<>("FAILED", HttpStatus.BAD_REQUEST);
     }
 }

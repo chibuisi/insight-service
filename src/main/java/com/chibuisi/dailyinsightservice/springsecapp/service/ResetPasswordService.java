@@ -88,7 +88,7 @@ public class ResetPasswordService {
         }
 
         userAccount.setPassword(passwordEncoder.encode(updatePasswordDTO.getPassword()));
-
+        userAccount.setResetTokenValidity(now);
         userDetailsService.saveUserAccount(userAccount);
 
         return true;

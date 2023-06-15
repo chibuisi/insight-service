@@ -507,8 +507,9 @@
                                             <td style="overflow-wrap:break-word;word-break:break-word;padding:11px 55px 18px;font-family:'Cabin',sans-serif;" align="left">
 
                                                 <div style="color: #ffffff; line-height: 160%; text-align: center; word-wrap: break-word;">
-                                                    <p style="font-size: 14px; line-height: 160%; text-align: justify;">This is an automated newsletter was sent to <span style="color:#ffffff;"><a href="#" style="color: #ffffff">${email}</a></span> because you are subscribed, please do not reply to this mailbox. This message was sent to other subscribers. If you have received it in error, please delete or contact
-                                                        us at <span style="color:#ffffff;"><a href="#" style="color: #ffffff">info@minor-insights.com</a></span>. To un-subscribe from this newsletter click <span style="color: #ffffff; line-height: 22.4px;"><a rel="noopener" href="http://localhost:8080/subscription/unsubscribe" target="_blank" style="color: #ffffff;">here</a></span></p>
+                                                    <p style="font-size: 14px; line-height: 160%; text-align: justify;">This is an automated email. This mailbox is not monitored! Please do not reply to this email. If you have received it in error, please delete or contact
+                                                        us at <span style="color:#ffffff;"><a href="#" style="color: #ffffff">info@minor-insights.com</a></span>.
+                                                    </p>
                                                 </div>
 
                                             </td>
