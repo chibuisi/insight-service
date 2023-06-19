@@ -150,7 +150,7 @@
                                             <td style="overflow-wrap:break-word;word-break:break-word;padding:0px 10px 31px;font-family:'Cabin',sans-serif;" align="left">
 
                                                 <div style="color: #e5eaf5; line-height: 140%; text-align: center; word-wrap: break-word;">
-                                                    <p style="font-size: 14px; line-height: 140%;"><span style="font-size: 28px; line-height: 39.2px;"><strong><span style="line-height: 39.2px; font-size: 28px;">Reset you password!</span></strong>
+                                                    <p style="font-size: 14px; line-height: 140%;"><span style="font-size: 28px; line-height: 39.2px;"><strong><span style="line-height: 39.2px; font-size: 28px;">Password Reset Confirmation!</span></strong>
                                   </span>
                                                     </p>
                                                 </div>
@@ -194,7 +194,7 @@
                                                     <p style="font-size: 14px; line-height: 160%; text-align: left;"><span style="font-size: 26px; line-height: 41.6px;">
                                                         <strong>
                                                             <span style="line-height: 41.6px;">
-                                                                We received your request to reset your password
+                                                                You recently changed  your password
                                                             </span>
                                                         </strong>
                                   </span>
@@ -234,36 +234,8 @@
 
                                                 <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
                                                     <p style="font-size: 14px; line-height: 160%; text-align: left;">
-                                                        Copy and paste this link to your browser to reset your password.
-                                                        If you did not make this request, please ignore this email.
-                                                    </p>
-                                                    <p style="font-size: 14px; line-height: 160%; text-align: left;">
-                                                        <span style="font-size: 16px; line-height: 25.6px;">
-                                                            ${resetPasswordLink}
-                                                        </span>
-                                                        <br/><br/>
-                                                    </p>
-                                                </div>
-
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-
-
-                                    <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                                        <tbody>
-                                        <tr>
-                                            <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;" align="left">
-
-                                                <!--[if mso]><style>.v-button {background: transparent !important;}</style><![endif]-->
-                                                <div align="center">
-                                                    <a href="${resetPasswordLink}" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #ff6600; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
-                                  <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="line-height: 16.8px;"><strong><span style="line-height: 16.8px;">Reset Password...</span></strong>
-                                  </span>
-                                  </span>
-                                                    </a>
-                                                    <!--[if mso]></center></v:roundrect><![endif]-->
+                                                        This email is to confirm that your password for your Minor Insights account has been successfully reset.
+                                                        Your account security is our utmost priority, and we want to ensure that you have full control over your account.                                                    </p>
                                                 </div>
 
                                             </td>
@@ -279,9 +251,8 @@
 
                                                 <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
                                                     <p style="font-size: 14px; line-height: 160%; text-align: left;">
-                                                        Please note that this link is valid for a limited time and will expire after 10 minutes. If the link expires,
-                                                        you can request a new password reset email by visiting the <a href="http://localhost:10240/reset-password">reset password page.</a>
-                                                    </p>
+                                                        If you initiated this password reset, no further action is required on your part.
+                                                        Your new password has been securely updated, and you can now access your account using your new password.                                                   </p>
                                                 </div>
 
                                             </td>
@@ -300,7 +271,8 @@
                                                     <p style="font-size: 14px; line-height: 160%; text-align: left;">
                                                         <span style="font-size: 12px; line-height: 19.2px;">
                                                             <span style="line-height: 19.2px;">
-                                                                If you have not requested to change your password, you can report this to us. Click <a rel="noopener" href="http://localhost:10240/report-spam" target="_blank">here </a>to make a report.
+                                                                If you did not request this password reset, please contact our support team immediately at <a rel="noopener" href="http://localhost:10240/report-spam" target="_blank">here</a>.
+                                                                We take all security-related matters seriously and will investigate any unauthorized activity.
                                                             </span>
                                                             <span style="line-height: 19.2px;">
                                                                 If you have any questions or need further assistance, please contact our support team at

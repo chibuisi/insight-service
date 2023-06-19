@@ -2,6 +2,7 @@ package com.chibuisi.dailyinsightservice.springsecapp.service;
 
 import com.chibuisi.dailyinsightservice.mail.model.EmailTemplate;
 import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
+import com.chibuisi.dailyinsightservice.springsecapp.EmailTemplateIdentifier;
 import com.chibuisi.dailyinsightservice.springsecapp.model.ResetPasswordDTO;
 import com.chibuisi.dailyinsightservice.springsecapp.model.UpdatePasswordDTO;
 import com.chibuisi.dailyinsightservice.springsecapp.model.UserAccount;
@@ -91,6 +92,27 @@ public class ResetPasswordService {
         userAccount.setResetTokenValidity(now);
         userDetailsService.saveUserAccount(userAccount);
 
+        sendPasswordResetConfirmationEmail(userAccount.getEmail());
+
         return true;
+    }
+
+    private void sendPasswordResetConfirmationEmail(String email) {
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put("email", email);
+
+        EmailTemplateIdentifier templateIdentifier = EmailTemplateIdentifier.RESET_PASSWORD_CONFIRMATION;
+        String htmlTemplate = templateUtil.getTemplate(templateIdentifier, additionalData);
+        if(htmlTemplate == null) {
+            System.out.println("Email Template was not found");
+            return;
+        }
+        EmailTemplate emailTemplate = EmailTemplate.builder()
+                .email(email)
+                .subject("Password Reset Confirmation")
+                .template(htmlTemplate)
+                .additionalData(additionalData).build();
+
+        javaMailService.sendEmail(emailTemplate);
     }
 }

@@ -1,5 +1,6 @@
 package com.chibuisi.dailyinsightservice.template;
 
+import com.chibuisi.dailyinsightservice.springsecapp.EmailTemplateIdentifier;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -54,6 +55,28 @@ public class TemplateUtil {
         Template template = null;
         try {
             template = configuration
+                    .getTemplate(htmlTemplate);
+            return FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+        } catch (IOException | TemplateException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getTemplate(EmailTemplateIdentifier emailTemplateIdentifier, Map<String, Object> model) {
+        String htmlTemplate = "";
+        switch (emailTemplateIdentifier) {
+            case RESET_PASSWORD:
+                htmlTemplate = "resetpassword.ftlh";
+                break;
+            case RESET_PASSWORD_CONFIRMATION:
+                htmlTemplate = "resetpasswordconfirmation.ftlh";
+                break;
+            default:
+                htmlTemplate = "default";
+        }
+        try {
+            Template template = configuration
                     .getTemplate(htmlTemplate);
             return FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
         } catch (IOException | TemplateException e) {
