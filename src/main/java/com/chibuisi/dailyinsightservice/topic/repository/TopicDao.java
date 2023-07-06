@@ -16,24 +16,18 @@ public class TopicDao {
     private EntityManager entityManager;
 
     public List<Topic> list(String query, Map<String, String> parameters) {
-//        String jpql = "SELECT t FROM Topic t WHERE 1 = 1";
-//        Map<String, Object> parameters = new HashMap<>();
-//        TypedQuery<Topic> typedQuery = entityManager.createQuery("SELECT t FROM Topic t WHERE t.name like :name", Topic.class);
         TypedQuery<Topic> typedQuery = entityManager.createQuery(query, Topic.class);
-//        typedQuery.setParameter("name", "technology");
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            if (entry.getKey().equals("limit")) continue;
             typedQuery.setParameter(entry.getKey(), entry.getValue());
         }
+        typedQuery.setMaxResults(Integer.parseInt(parameters.get("limit")));
         return typedQuery.getResultList();
     }
 
-    public Long count(String query, Map<String, String> parameters) {
-        TypedQuery<Topic> typedQuery = entityManager.createQuery(query, Topic.class);
-        TypedQuery<Long> typedQueryCount = entityManager.createQuery("select count(*) from ("+query+")", Long.class);
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            typedQuery.setParameter(entry.getKey(), entry.getValue());
-            typedQueryCount.setParameter(entry.getKey(), entry.getValue());
-        }
+    public Long count() {
+        String query = "select count(*) from Topic t";
+        TypedQuery<Long> typedQueryCount = entityManager.createQuery(query, Long.class);
         return typedQueryCount.getSingleResult();
     }
 }

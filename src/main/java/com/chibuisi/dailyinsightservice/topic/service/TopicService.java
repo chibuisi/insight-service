@@ -123,18 +123,14 @@ public class TopicService {
                         case "keywords":
                         case "keyword":
                             String [] keywords = filterArr[1].split(",");
-                            if(keywords.length == 1) {
-                                queryBuilder.append(" AND t.keywords like :keywords");
-                                parameters.put("keywords", "%"+filterArr[1]+"%");
+                            queryBuilder.append(" AND (");
+                            for(int i = 0; i < keywords.length; i++) {
+                                queryBuilder.append(" t.keywords LIKE :").append("keywords").append(i);
+                                parameters.put("keywords"+i, "%"+keywords[i]+"%");
+                                if(i < keywords.length - 1)
+                                    queryBuilder.append(" OR ");
                             }
-                            else if(keywords.length > 1) {
-                                queryBuilder.append(" AND t.keywords like :keywords0");
-                                parameters.put("keywords0", "%"+keywords[0]+"%");
-                                for(int i = 1; i < keywords.length; i++) {
-                                    queryBuilder.append(" OR t.keywords like :keywords").append(i);
-                                    parameters.put("keywords"+i, "%"+keywords[i]+"%");
-                                }
-                            }
+                            queryBuilder.append(")");
                         default:
                     }
                 }
@@ -157,20 +153,26 @@ public class TopicService {
         }
 
         if (request.getPageSize() != null) {
-            queryBuilder.append(" limit :limit");
-            parameters.put("limit", request.getPageSize());
+            int pageSize = 10;
+            try {
+                pageSize = Integer.parseInt(request.getPageSize());
+            } catch (Exception ignored) {
+            }
+            parameters.put("limit", String.valueOf(pageSize));
         } else {
-            queryBuilder.append(" limit 10");
+            parameters.put("limit", String.valueOf(10));
+//            queryBuilder.append(" LIMIT 10");
         }
 
         List<Topic> topics = topicDao.list(queryBuilder.toString(), parameters);
-        topics.forEach(topic -> System.out.println(topic.getName()));
-        Long totalCount = topicDao.count(queryBuilder.toString(), parameters);
-        int pageSize = request.getPageSize() == null ? 0 : Integer.parseInt(request.getPageSize());
+
+        Long totalCount = topicDao.count();
+        int pageSize = request.getPageSize() == null ? 10 : Integer.parseInt(request.getPageSize());
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
         int currentPage = request.getPageToken() == null ? 0 : Integer.parseInt(request.getPageToken());
         int nextPage = currentPage + 1;
-        String nextPageToken = nextPage + "/" + totalPages;
+        String nextPageToken = nextPage < totalCount ? nextPage + "/" + totalPages : totalPages + "/" + totalPages;
+
         return TopicListResponse.builder()
                 .nextPageToken(nextPageToken)
                 .topicResponses(TopicTransformer.fromTopicList(topics))

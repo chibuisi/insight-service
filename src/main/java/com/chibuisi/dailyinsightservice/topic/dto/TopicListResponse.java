@@ -13,6 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 public class TopicListResponse {
     private String nextPageToken;
-    private String pageSize;
     private List<TopicResponse> topicResponses;
 }
