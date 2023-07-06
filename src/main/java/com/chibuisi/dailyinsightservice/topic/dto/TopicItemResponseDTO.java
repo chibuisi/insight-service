@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.topic.dto;
 
-import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
+import com.chibuisi.dailyinsightservice.article.model.Article;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class TopicItemResponseDTO {
-    private List<TopicItem> savedTopicItems;
-    private List<TopicItem> duplicateTopicItems;
+    private List<Article> savedTopicItems;
+    private List<Article> duplicateTopicItems;
 }

@@ -14,9 +14,9 @@ public class UserAlreadyExistsExceptionHandler {
         return exception.getMessage();
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleGenericFailures(RuntimeException exception){
-        System.out.println("Exception occurred at this point: "+exception.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred!");
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<?> handleGenericFailures(RuntimeException exception){
+//        System.out.println("Exception occurred at this point: "+exception.getMessage());
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred!");
+//    }
 }

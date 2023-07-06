@@ -4,7 +4,7 @@ import com.chibuisi.dailyinsightservice.scheduler.service.HourlyScheduleHelper;
 import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ReadyScheduleStatus;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleType;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -26,7 +26,7 @@ implements ApplicationListener<ApplicationReadyEvent> {
 
   private void publishPubSubMessage(){
     ReadySchedule readySchedule1 = ReadySchedule.builder()
-            .id(1L).userId(1L).topic(SupportedTopics.WORD)
+            .id(1L).userId(1L).topic(SupportedTopic.WORD)
             .status(ReadyScheduleStatus.PROCESSED)
             .dateProcessed(LocalDateTime.now())
             .scheduleType(ScheduleType.DAILY).time(8).timezone("mst")

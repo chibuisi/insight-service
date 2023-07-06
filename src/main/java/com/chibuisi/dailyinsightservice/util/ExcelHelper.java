@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.util;
 
-import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
+import com.chibuisi.dailyinsightservice.article.model.Article;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItemKey;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItemProperties;
 import org.apache.poi.ss.usermodel.*;
@@ -45,7 +45,7 @@ public class ExcelHelper {
         return true;
     }
 
-    public static List<TopicItem> rowsToObject(MultipartFile file, String topic) {
+    public static List<Article> rowsToObject(MultipartFile file, String topic) {
         try {
             InputStream is = file.getInputStream();
             Workbook workbook = new XSSFWorkbook(is);
@@ -58,13 +58,13 @@ public class ExcelHelper {
 
             Iterator<Row> rows = sheet.iterator();
 
-            List<TopicItem> topicItems = new ArrayList<>();
+            List<Article> articles = new ArrayList<>();
             Map<Integer, String> headerIndexMap = new HashMap<>();
             int titleIndex = -1, tagIndex = -1, dateTagIndex = -1;
 
             int rowNumber = 0;
             while (rows.hasNext()) {
-                TopicItem topicItem = TopicItem.builder().build();
+                Article article = Article.builder().build();
 
                 //grab current row
                 Row currentRow = rows.next();
@@ -94,21 +94,21 @@ public class ExcelHelper {
                 List<Integer> topicAndTitleIndex = new ArrayList<>();
 
                 if(titleIndex != -1){
-                    topicItem.setTitle(currentRow.getCell(titleIndex).getStringCellValue());
+                    article.setTitle(currentRow.getCell(titleIndex).getStringCellValue());
                     topicAndTitleIndex.add(titleIndex);
                 }
 
                 if(tagIndex != -1){
-                    topicItem.setTag(currentRow.getCell(tagIndex).getStringCellValue());
+                    article.setTag(currentRow.getCell(tagIndex).getStringCellValue());
                     topicAndTitleIndex.add(tagIndex);
                 }
 
                 if(dateTagIndex != -1){
-                    topicItem.setDateTag(currentRow.getCell(dateTagIndex).getStringCellValue());
+                    article.setDateTag(currentRow.getCell(dateTagIndex).getStringCellValue());
                     topicAndTitleIndex.add(dateTagIndex);
                 }
 
-                topicItem.setDateAdded(LocalDateTime.now());
+                article.setPublicationDate(LocalDateTime.now());
 
                 //grab the rest of the columns in topic item properties object
                 List<TopicItemProperties> topicItemProperties = new ArrayList<>();
@@ -125,13 +125,13 @@ public class ExcelHelper {
                         }
                     }
                 }
-                topicItem.setTopicItemProperties(topicItemProperties);
-                topicItems.add(topicItem);
+                article.setTopicItemProperties(topicItemProperties);
+                articles.add(article);
             }
 
             workbook.close();
 
-            return topicItems;
+            return articles;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }

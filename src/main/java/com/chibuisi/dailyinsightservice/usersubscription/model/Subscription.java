@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.usersubscription.model;
 
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class Subscription {
     private Long userId;
     private String email;
     private String topic;
-    private SupportedTopics supportedTopic;
+    private SupportedTopic supportedTopic;
     private SubscriptionStatus status;
     private LocalDateTime dateSubscribed;
     private LocalDateTime dateUpdated;

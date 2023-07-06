@@ -2,7 +2,7 @@ package com.chibuisi.dailyinsightservice.usersubscription.service.impl;
 
 import com.chibuisi.dailyinsightservice.schedules.model.ScheduleDTO;
 import com.chibuisi.dailyinsightservice.schedules.service.ScheduleService;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import com.chibuisi.dailyinsightservice.user.model.User;
 import com.chibuisi.dailyinsightservice.user.service.UserService;
 import com.chibuisi.dailyinsightservice.usersubscription.model.Subscription;
@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -32,14 +31,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Subscription subscribe(Subscription subscription) {
         User user = userService.getUserByEmail(subscription.getEmail());
-        SupportedTopics supportedTopics = SupportedTopics.of(subscription.getTopic());
+        SupportedTopic supportedTopic = SupportedTopic.of(subscription.getTopic());
         if(user == null){
             user = User.builder().timezone("mst").dateJoined(LocalDateTime.now())
                     .email(subscription.getEmail()).build();
             user = userService.saveUser(user);
         }
         ScheduleDTO scheduleDTO = ScheduleDTO.builder().time(6).timezone(user.getTimezone())
-                .userId(user.getId()).topic(supportedTopics.getName()).build();
+                .userId(user.getId()).topic(supportedTopic.getName()).build();
         Subscription existing = subscriptionRepository
                 .findByEmailAndTopic(subscription.getEmail(), subscription.getTopic());
         if(existing == null){
@@ -48,8 +47,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             subscription.setDateUpdated(date);
             subscription.setUserId(user.getId());
             subscription.setStatus(SubscriptionStatus.ACTIVE);
-            subscription.setTopic(supportedTopics.getName());
-            subscription.setSupportedTopic(supportedTopics);
+            subscription.setTopic(supportedTopic.getName());
+            subscription.setSupportedTopic(supportedTopic);
             scheduleService.saveSchedule(scheduleDTO);
             return subscriptionRepository.save(subscription);
         }
@@ -109,7 +108,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public Subscription updateSubscription(SubscriptionRequestDto subscriptionRequestDto) {
         Subscription existing = subscriptionRepository
                 .findByEmailAndTopic(subscriptionRequestDto.getEmail(),
-                        SupportedTopics.of(subscriptionRequestDto.getTopic()).getName());
+                        SupportedTopic.of(subscriptionRequestDto.getTopic()).getName());
         if(existing != null){
             SubscriptionStatus supStatus = SubscriptionStatus.of(subscriptionRequestDto.getStatus());
             if(!supStatus.equals(existing.getStatus())) {

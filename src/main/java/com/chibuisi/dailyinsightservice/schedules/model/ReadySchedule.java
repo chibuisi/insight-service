@@ -2,7 +2,7 @@ package com.chibuisi.dailyinsightservice.schedules.model;
 
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ReadyScheduleStatus;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleType;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class ReadySchedule {
     private Long id;
     private Long userId;
     private Integer time;
-    private SupportedTopics topic;
+    private SupportedTopic topic;
     private String timezone;
     private LocalDateTime dateProcessed;
     private LocalDateTime dateSent;

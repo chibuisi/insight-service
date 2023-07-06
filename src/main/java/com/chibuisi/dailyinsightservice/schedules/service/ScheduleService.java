@@ -8,7 +8,7 @@ import com.chibuisi.dailyinsightservice.schedules.repository.DailyCustomSchedule
 import com.chibuisi.dailyinsightservice.schedules.repository.DefaultScheduleRepository;
 import com.chibuisi.dailyinsightservice.schedules.repository.MonthlyCustomScheduleRepository;
 import com.chibuisi.dailyinsightservice.schedules.repository.WeeklyCustomScheduleRepository;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import com.chibuisi.dailyinsightservice.topic.model.UserTopicItemOffset;
 import com.chibuisi.dailyinsightservice.user.model.User;
 import com.chibuisi.dailyinsightservice.user.service.UserService;
@@ -23,9 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
-import java.time.temporal.ChronoField;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService {
@@ -49,7 +47,7 @@ public class ScheduleService {
         User user = userService.getUserById(scheduleDTO.getUserId());
         if(user == null)
             return DefaultSchedule.builder().build();
-        SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
+        SupportedTopic topic = SupportedTopic.of(scheduleDTO.getTopic());
         Subscription subscription =
                 subscriptionService.getSubscriptionInfo(user.getEmail(), topic.getName());
         if(subscription == null)
@@ -141,7 +139,7 @@ public class ScheduleService {
         monthlyCustomScheduleRepository.saveAll(monthlyCustomSchedules);
     }
     public List<Schedule> getScheduleByUserIdAndTopic(Long userId, String topic){
-        SupportedTopics foundTopic = SupportedTopics.of(topic);
+        SupportedTopic foundTopic = SupportedTopic.of(topic);
         List<Schedule> schedules = new ArrayList<>();
         DefaultSchedule defaultSchedule = defaultScheduleRepository
                 .findDefaultScheduleByUserIdAndTopic(userId,foundTopic);
@@ -169,7 +167,7 @@ public class ScheduleService {
     }
 
     public List<? extends Schedule> pauseUnpauseSchedule(Long userId, String topic, String scheduleType){
-        SupportedTopics foundTopic = SupportedTopics.of(topic);
+        SupportedTopic foundTopic = SupportedTopic.of(topic);
         Schedule schedule = getScheduleInstanceFromUserIdAndTopic(userId, topic, scheduleType);
         if(schedule instanceof DailyCustomSchedule){
             DailyCustomSchedule existing = dailyCustomScheduleRepository
@@ -226,7 +224,7 @@ public class ScheduleService {
     }
 
     public void deleteSchedule(Long userId, String topic, String scheduleType){
-        SupportedTopics foundTopic = SupportedTopics.of(topic);
+        SupportedTopic foundTopic = SupportedTopic.of(topic);
         Schedule schedule = getScheduleInstanceFromUserIdAndTopic(userId, topic, scheduleType);
         if(schedule instanceof DailyCustomSchedule){
             DailyCustomSchedule existing = dailyCustomScheduleRepository
@@ -267,7 +265,7 @@ public class ScheduleService {
 
     @Transactional
     public void deleteAllScheduleForUser(Long userId, String topic){
-        SupportedTopics foundTopic = SupportedTopics.of(topic);
+        SupportedTopic foundTopic = SupportedTopic.of(topic);
         defaultScheduleRepository.deleteAllByUserIdAndTopic(userId,foundTopic);
         dailyCustomScheduleRepository.deleteAllByUserIdAndTopic(userId,foundTopic);
         weeklyCustomScheduleRepository.deleteAllByUserIdAndTopic(userId,foundTopic);
@@ -295,19 +293,19 @@ public class ScheduleService {
     public List<MonthlyCustomSchedule> getUserMonthlyCustomSchedules(Long userId){
         return monthlyCustomScheduleRepository.findMonthlyCustomSchedulesByUserId(userId);
     }
-    public List<DefaultSchedule> getUserDefaultSchedulesByTopic(Long userId, SupportedTopics topic){
+    public List<DefaultSchedule> getUserDefaultSchedulesByTopic(Long userId, SupportedTopic topic){
         return defaultScheduleRepository.findDefaultSchedulesByUserIdAndTopic(userId, topic);
     }
-    public List<DailyCustomSchedule> getUserDailyCustomSchedulesByTopic(Long userId, SupportedTopics topic){
+    public List<DailyCustomSchedule> getUserDailyCustomSchedulesByTopic(Long userId, SupportedTopic topic){
         return dailyCustomScheduleRepository.findDailySchedulesByUserIdAndTopic(userId, topic);
     }
-    public List<WeeklyCustomSchedule> getUserWeeklyCustomSchedulesByTopic(Long userId, SupportedTopics topic){
+    public List<WeeklyCustomSchedule> getUserWeeklyCustomSchedulesByTopic(Long userId, SupportedTopic topic){
         return weeklyCustomScheduleRepository.findWeeklySchedulesByUserIdAndTopic(userId, topic);
     }
-    public List<MonthlyCustomSchedule> getUserMonthlyCustomSchedulesByTopic(Long userId, SupportedTopics topic){
+    public List<MonthlyCustomSchedule> getUserMonthlyCustomSchedulesByTopic(Long userId, SupportedTopic topic){
         return monthlyCustomScheduleRepository.findMonthlySchedulesByUserIdAndTopic(userId, topic);
     }
-    public Map<String, List<? extends Schedule>> getUserAllScheduleByTopic(Long userId, SupportedTopics topic){
+    public Map<String, List<? extends Schedule>> getUserAllScheduleByTopic(Long userId, SupportedTopic topic){
         Map<String, List<? extends Schedule>> userSchedules = new HashMap<>();
         userSchedules.put("default", getUserDefaultSchedulesByTopic(userId, topic));
         userSchedules.put("daily", getUserDailyCustomSchedulesByTopic(userId, topic));
@@ -315,19 +313,19 @@ public class ScheduleService {
         userSchedules.put("monthly", getUserMonthlyCustomSchedulesByTopic(userId, topic));
         return userSchedules;
     }
-    public List<DefaultSchedule> getTopicDefaultSchedules(SupportedTopics topic){
+    public List<DefaultSchedule> getTopicDefaultSchedules(SupportedTopic topic){
         return defaultScheduleRepository.findDefaultCustomSchedulesByTopic(topic);
     }
-    public List<DailyCustomSchedule> getTopicDailyCustomSchedules(SupportedTopics topic){
+    public List<DailyCustomSchedule> getTopicDailyCustomSchedules(SupportedTopic topic){
         return dailyCustomScheduleRepository.findDailyCustomSchedulesByTopic(topic);
     }
-    public List<WeeklyCustomSchedule> getTopicWeeklyCustomSchedules(SupportedTopics topic){
+    public List<WeeklyCustomSchedule> getTopicWeeklyCustomSchedules(SupportedTopic topic){
         return weeklyCustomScheduleRepository.findWeeklyCustomSchedulesByTopic(topic);
     }
-    public List<MonthlyCustomSchedule> getTopicMonthlyCustomSchedules(SupportedTopics topic){
+    public List<MonthlyCustomSchedule> getTopicMonthlyCustomSchedules(SupportedTopic topic){
         return monthlyCustomScheduleRepository.findMonthlyCustomSchedulesByTopic(topic);
     }
-    public Map<String, List<? extends Schedule>> getTopicAllSchedule(SupportedTopics topic){
+    public Map<String, List<? extends Schedule>> getTopicAllSchedule(SupportedTopic topic){
         Map<String, List<? extends Schedule>> userSchedules = new HashMap<>();
         userSchedules.put("default", getTopicDefaultSchedules(topic));
         userSchedules.put("daily", getTopicDailyCustomSchedules(topic));
@@ -348,7 +346,7 @@ public class ScheduleService {
         if(schedType == null || schedType.length() == 0)
             scheduleDTO.setScheduleType(ScheduleType.DEFAULT.getValue());
         ScheduleType scheduleType = ScheduleType.of(scheduleDTO.getScheduleType());
-        SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
+        SupportedTopic topic = SupportedTopic.of(scheduleDTO.getTopic());
         switch (scheduleType){
             case DAILY:{
                 DailyCustomSchedule dailyCustomSchedule =
@@ -392,7 +390,7 @@ public class ScheduleService {
     public void synchronizeAllScheduleTable(ScheduleDTO scheduleDTO){
         ScheduleType scheduleType = ScheduleType.of(scheduleDTO.getScheduleType());
         Long userId = scheduleDTO.getUserId();
-        SupportedTopics topic = SupportedTopics.of(scheduleDTO.getTopic());
+        SupportedTopic topic = SupportedTopic.of(scheduleDTO.getTopic());
         defaultScheduleRepository.deleteAllByUserIdAndTopic(userId, topic);
         List<ScheduleType> scheduleTypes = new ArrayList<>(
                 Arrays.asList(ScheduleType.DAILY,ScheduleType.MONTHLY, ScheduleType.WEEKLY));
@@ -454,7 +452,7 @@ public class ScheduleService {
         return sum;
     }
 
-    private void createUserTopicItemOffset(User user, SupportedTopics topic){
+    private void createUserTopicItemOffset(User user, SupportedTopic topic){
         UserTopicItemOffset userTopicItemOffset = UserTopicItemOffset
                 .builder().topicItemOffset(1L)
                 .userId(user.getId()).topic(topic).build();

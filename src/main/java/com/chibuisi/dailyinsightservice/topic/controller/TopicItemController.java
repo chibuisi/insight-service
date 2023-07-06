@@ -2,7 +2,7 @@ package com.chibuisi.dailyinsightservice.topic.controller;
 
 import com.chibuisi.dailyinsightservice.template.TopicItemTemplateService;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicItemResponseDTO;
-import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
+import com.chibuisi.dailyinsightservice.article.model.Article;
 import com.chibuisi.dailyinsightservice.topic.service.TopicItemService;
 import com.chibuisi.dailyinsightservice.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,8 @@ public class TopicItemController {
     private TopicItemTemplateService topicItemTemplateService;
 
     @PostMapping
-    public ResponseEntity save(@RequestBody TopicItem topicItem){
-        return new ResponseEntity(topicItemService.save(topicItem), HttpStatus.OK);
+    public ResponseEntity save(@RequestBody Article article){
+        return new ResponseEntity(topicItemService.save(article), HttpStatus.OK);
     }
 
     @GetMapping
@@ -37,8 +37,8 @@ public class TopicItemController {
     }
 
     @PostMapping("/list/{topicName}")
-    public ResponseEntity saveTopicItemList(@RequestBody List<TopicItem> topicItems, @PathVariable String topicName){
-        TopicItemResponseDTO responseDTO = topicItemService.saveTopicItemList(topicItems, topicName);
+    public ResponseEntity saveTopicItemList(@RequestBody List<Article> articles, @PathVariable String topicName){
+        TopicItemResponseDTO responseDTO = topicItemService.saveTopicItemList(articles, topicName);
         if(responseDTO.getDuplicateTopicItems().size() > 0)
             return new ResponseEntity(responseDTO, HttpStatus.CONFLICT);
         return new ResponseEntity(responseDTO, HttpStatus.CREATED);
@@ -54,19 +54,19 @@ public class TopicItemController {
     @GetMapping("/search")
     public ResponseEntity search(@RequestParam(required = false) String title,
                                   @RequestParam(required = false) Long itemId){
-        TopicItem foundTopicItem = null;
+        Article foundArticle = null;
         if(title != null && title.length() > 0)
-            foundTopicItem = topicItemService.get(title).orElse(null);
+            foundArticle = topicItemService.get(title).orElse(null);
         else
-            foundTopicItem = topicItemService.get(itemId).orElse(null);
-        if (foundTopicItem == null)
+            foundArticle = topicItemService.get(itemId).orElse(null);
+        if (foundArticle == null)
             return new ResponseEntity("Not found", HttpStatus.NOT_FOUND);
-        return new ResponseEntity(foundTopicItem, HttpStatus.OK);
+        return new ResponseEntity(foundArticle, HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity updateTopicItem(@RequestBody TopicItem topicItem){
-        return new ResponseEntity(topicItemService.update(topicItem), HttpStatus.OK);
+    public ResponseEntity updateTopicItem(@RequestBody Article article){
+        return new ResponseEntity(topicItemService.update(article), HttpStatus.OK);
     }
 
     @DeleteMapping

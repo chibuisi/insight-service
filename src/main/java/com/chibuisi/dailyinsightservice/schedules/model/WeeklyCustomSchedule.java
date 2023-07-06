@@ -2,15 +2,13 @@ package com.chibuisi.dailyinsightservice.schedules.model;
 
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleDay;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleStatus;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +20,7 @@ public class WeeklyCustomSchedule extends Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-    private SupportedTopics topic;
+    private SupportedTopic topic;
     private Integer frequency;
     private Integer frequencyCounter;
     private ScheduleDay scheduleDay;

@@ -1,18 +1,16 @@
 package com.chibuisi.dailyinsightservice.template;
 
-import com.chibuisi.dailyinsightservice.article.model.Article;
-import com.chibuisi.dailyinsightservice.article.model.Footer;
-import com.chibuisi.dailyinsightservice.article.model.Header;
-import com.chibuisi.dailyinsightservice.article.model.Newsletter;
+import com.chibuisi.dailyinsightservice.article.model.*;
 import com.chibuisi.dailyinsightservice.mail.model.TemplateHelper;
 import com.chibuisi.dailyinsightservice.mail.service.serviceimpl.JavaMailService;
 import com.chibuisi.dailyinsightservice.schedules.model.ReadySchedule;
 import com.chibuisi.dailyinsightservice.template.model.ItemKey;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
-import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
+import com.chibuisi.dailyinsightservice.topic.model.Topic;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItemProperties;
 import com.chibuisi.dailyinsightservice.topic.model.UserTopicItemOffset;
 import com.chibuisi.dailyinsightservice.topic.service.TopicItemServiceImpl;
+import com.chibuisi.dailyinsightservice.topic.service.TopicService;
 import com.chibuisi.dailyinsightservice.user.model.User;
 import com.chibuisi.dailyinsightservice.user.service.UserService;
 import freemarker.template.Configuration;
@@ -42,24 +40,19 @@ public class TemplateService {
         User user = userService.getUserById(readySchedule.getUserId());
         if(user == null)
             return;
-        SupportedTopics topic = SupportedTopics.of(readySchedule.getTopic().getName());
+        SupportedTopic topic = SupportedTopic.of(readySchedule.getTopic().getName());
         if(topic == null)
             return;
         Long userTopicItemOffset = getUserTopicItemOffset(user, topic);
-        Optional<TopicItem> optionalTopicItem = Optional.empty();
-        if(userTopicItemOffset != null)
-            optionalTopicItem = topicItemService.findTopicItemByOffset(userTopicItemOffset);
-        TopicItem topicItem;
-        if(!optionalTopicItem.isPresent())
-            topicItem = topicItemService.findByLatestTag();
-        else
-            topicItem = optionalTopicItem.get();
-        if(topicItem == null)
-            topicItem = topicItemService.findByDateTag();
-        if(topicItem == null)
+        Optional<Article> optionalTopicItem = Optional.empty();
+//        if(userTopicItemOffset != null)
+//            optionalTopicItem = topicItemService.findTopicItemByOffset(userTopicItemOffset);
+        Article article;
+        article = optionalTopicItem.orElseGet(() -> topicItemService.findByLatestTag());
+        if(article == null)
+            article = topicItemService.findByDateTag();
+        if(article == null)
             return;
-        Article article = Article.builder()
-                .topic(readySchedule.getTopic()).topicItem(topicItem).build();
         Newsletter newsletter = Newsletter.builder()
                 .article(article).frequencyType(readySchedule.getScheduleType().getValue())
                 .header(null).footer(null).build();
@@ -69,7 +62,7 @@ public class TemplateService {
                 .user(user)
                 .readySchedule(readySchedule).build();
         Map<String, Object> model = transformTemplateModel(templateHelper);
-        String htmlTemplate = "";
+        String htmlTemplate;
         try {
             Template template = configuration
                     .getTemplate(TemplateUtil.getTemplateByTopicName(topic.getName().toLowerCase()));
@@ -83,7 +76,7 @@ public class TemplateService {
         }
     }
 
-    private Long getUserTopicItemOffset(User user, SupportedTopics topic){
+    private Long getUserTopicItemOffset(User user, SupportedTopic topic){
         Long offset = user.getUserTopicItemOffsets()
                 .stream()
                 .filter(e -> e.getUserId().equals(user.getId()) && e.getTopic().equals(topic))
@@ -91,36 +84,34 @@ public class TemplateService {
         return offset;
     }
 
-    private User updateUserTopicItemOffset(User user, SupportedTopics topic, Long offset){
+    private void updateUserTopicItemOffset(User user, SupportedTopic topic, Long offset){
         if(user == null || user.getUserTopicItemOffsets() == null)
-            return user;
+            return;
         Optional<UserTopicItemOffset> existing = user.getUserTopicItemOffsets()
                 .stream()
                 .filter(e -> e.getUserId().equals(user.getId()) && e.getTopic().equals(topic))
                 .findFirst();
         if(!existing.isPresent())
-            return user;
+            return;
         user.getUserTopicItemOffsets()
                 .stream()
                 .filter(e -> e.getUserId().equals(user.getId()) && e.getTopic().equals(topic))
                 .findFirst().get().setTopicItemOffset(offset);
-        return user;
     }
 
     private Map<String, Object> transformTemplateModel(TemplateHelper templateHelper){
         Map<String, Object> model = new HashMap<>();
         Newsletter newsletter = templateHelper.getNewsletter();
         User user = templateHelper.getUser();
-        Article article = newsletter.getArticle();
         Header header = newsletter.getHeader();
         Footer footer = newsletter.getFooter();
-        TopicItem topicItem = article.getTopicItem();
-        List<TopicItemProperties> topicItemProperties = topicItem.getTopicItemProperties();
+        Article article = newsletter.getArticle();
+        List<TopicItemProperties> topicItemProperties = article.getTopicItemProperties();
         Map<String, Object> properties = new HashMap<>();
         ReadySchedule readySchedule = templateHelper.getReadySchedule();
         List<ItemKey> itemKeys = new ArrayList<>();
-        model.put("topic", capitaliseFirstLetter(article.getTopic().getName()));
-        model.put("title", capitaliseFirstLetter(topicItem.getTitle()));
+        model.put("topic", capitaliseFirstLetter(article.getTopicName()));
+        model.put("title", capitaliseFirstLetter(article.getTitle()));
         model.put("scheduleType", readySchedule.getScheduleType().getValue().toLowerCase());
         topicItemProperties.forEach(e -> {
             if(!e.getPropertyKey().equals("meaning")) {
@@ -132,7 +123,7 @@ public class TemplateService {
         });
         model.put("itemKeys", itemKeys);
         model.put("properties", properties);
-        model.put("topicItem", topicItem);
+        model.put("article", article);
         model.put("firstname", user.getFirstname());
         model.put("email", user.getEmail());
         model.put("header", header);

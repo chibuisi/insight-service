@@ -1,7 +1,6 @@
 package com.chibuisi.dailyinsightservice;
 
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleType;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
 
 import java.util.*;
 

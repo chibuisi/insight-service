@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.schedules.model;
 
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class ScheduleDTO {
     public static DefaultSchedule createDefaultSchedule(ScheduleDTO scheduleDTO){
         DefaultSchedule defaultSchedule = DefaultSchedule.builder()
                 .userId(scheduleDTO.getUserId())
-                .topic(SupportedTopics.of(scheduleDTO.getTopic()))
+                .topic(SupportedTopic.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
                 .build();
         return defaultSchedule;
@@ -33,7 +33,7 @@ public class ScheduleDTO {
             (ScheduleDTO scheduleDTO){
         DailyCustomSchedule dailyCustomSchedule = DailyCustomSchedule.builder()
                 .userId(scheduleDTO.getUserId())
-                .topic(SupportedTopics.of(scheduleDTO.getTopic()))
+                .topic(SupportedTopic.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
                 .frequency(getValidDailyFrequency(scheduleDTO.getFrequency()))
                 .frequencyCounter(getValidDailyFrequency(scheduleDTO.getFrequency()))
@@ -46,7 +46,7 @@ public class ScheduleDTO {
             (ScheduleDTO scheduleDTO){
         WeeklyCustomSchedule weeklyCustomSchedule = WeeklyCustomSchedule.builder()
                 .userId(scheduleDTO.getUserId())
-                .topic(SupportedTopics.of(scheduleDTO.getTopic()))
+                .topic(SupportedTopic.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
                 .time(scheduleDTO.getTime())
                 .frequency(getValidWeeklyFrequency(scheduleDTO.getFrequency()))
@@ -59,7 +59,7 @@ public class ScheduleDTO {
             (ScheduleDTO scheduleDTO){
         MonthlyCustomSchedule monthlyCustomSchedule = MonthlyCustomSchedule.builder()
                 .userId(scheduleDTO.getUserId())
-                .topic(SupportedTopics.of(scheduleDTO.getTopic()))
+                .topic(SupportedTopic.of(scheduleDTO.getTopic()))
                 .timezone(scheduleDTO.getTimezone())
                 .time(scheduleDTO.getTime())
                 .frequency(getValidMonthlyFrequency(scheduleDTO.getFrequency()))

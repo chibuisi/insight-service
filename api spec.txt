@@ -3,6 +3,14 @@ GET /topic - list by topic : paginated
 POST /subscribe - add a suscriber to sub
 POST /unsubscribe - remove a subscriber from sub
 
+Topic
+POST /feature - set topics as featured
+POST /unfeature - unset topics as featured
+
+Topic - technology, food, human-languages, algorithms
+    SimpleArticle - has no properties: used for articles read on the user page
+    AdvancedArticle - has properties: used in sending word of the day
+
 Subscriber
 GET /{email} - get subsriber info by email
 GET /subscription/{email} - list subscriber subscription topics : paginated

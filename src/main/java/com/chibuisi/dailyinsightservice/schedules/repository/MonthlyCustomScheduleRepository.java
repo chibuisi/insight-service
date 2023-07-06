@@ -2,7 +2,7 @@ package com.chibuisi.dailyinsightservice.schedules.repository;
 
 import com.chibuisi.dailyinsightservice.schedules.model.MonthlyCustomSchedule;
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleStatus;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,13 +13,13 @@ import java.util.List;
 
 @Repository
 public interface MonthlyCustomScheduleRepository extends JpaRepository<MonthlyCustomSchedule, Long> {
-    public List<MonthlyCustomSchedule> findMonthlyCustomScheduleByUserIdAndTopic(Long userId, SupportedTopics topic);
+    public List<MonthlyCustomSchedule> findMonthlyCustomScheduleByUserIdAndTopic(Long userId, SupportedTopic topic);
     public MonthlyCustomSchedule
-    findMonthlyCustomScheduleByUserIdAndTopicAndDay(Long userId, SupportedTopics topic, Integer day);
+    findMonthlyCustomScheduleByUserIdAndTopicAndDay(Long userId, SupportedTopic topic, Integer day);
     public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByUserId(Long userId);
-    public List<MonthlyCustomSchedule> findMonthlySchedulesByUserIdAndTopic(Long userId, SupportedTopics topic);
-    public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByTopic(SupportedTopics topic);
-    public void deleteAllByUserIdAndTopic(Long userId, SupportedTopics topic);
+    public List<MonthlyCustomSchedule> findMonthlySchedulesByUserIdAndTopic(Long userId, SupportedTopic topic);
+    public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByTopic(SupportedTopic topic);
+    public void deleteAllByUserIdAndTopic(Long userId, SupportedTopic topic);
     public List<MonthlyCustomSchedule> findMonthlyCustomSchedulesByStatusAndTimeAndDayAndFrequencyCounterEquals(
             ScheduleStatus scheduleStatus, Integer time, Integer day, Integer freq);
     @Modifying(clearAutomatically = true)

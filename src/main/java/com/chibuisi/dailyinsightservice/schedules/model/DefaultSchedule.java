@@ -1,7 +1,7 @@
 package com.chibuisi.dailyinsightservice.schedules.model;
 
 import com.chibuisi.dailyinsightservice.schedules.model.enums.ScheduleStatus;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class DefaultSchedule extends Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-    private SupportedTopics topic;
+    private SupportedTopic topic;
     private String timezone;
     private ScheduleStatus status;
 }

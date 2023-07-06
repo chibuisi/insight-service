@@ -19,7 +19,7 @@ public class UserTopicItemOffset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private SupportedTopics topic;
+    private SupportedTopic topic;
     private Long userId;
     private Long topicItemOffset;
 }

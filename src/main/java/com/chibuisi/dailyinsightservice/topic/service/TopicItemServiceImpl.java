@@ -1,8 +1,8 @@
 package com.chibuisi.dailyinsightservice.topic.service;
 
 import com.chibuisi.dailyinsightservice.topic.dto.TopicItemResponseDTO;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
-import com.chibuisi.dailyinsightservice.topic.model.TopicItem;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
+import com.chibuisi.dailyinsightservice.article.model.Article;
 import com.chibuisi.dailyinsightservice.topic.repository.TopicItemRepository;
 import com.chibuisi.dailyinsightservice.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class TopicItemServiceImpl implements TopicItemService{
@@ -25,46 +24,37 @@ public class TopicItemServiceImpl implements TopicItemService{
     @Autowired
     private TopicItemRepository topicItemRepository;
     @Override
-    public TopicItem save(TopicItem topicItem) {
-        Optional<TopicItem> existing = topicItemRepository.findByTitle(topicItem.getTitle());
+    public Article save(Article article) {
+        Optional<Article> existing = topicItemRepository.findByTitle(article.getTitle());
         if(existing.isPresent()){
             return null;
         }
-        SupportedTopics topic = SupportedTopics.of(topicItem.getTopicName());
-        topicItem.setDateAdded(LocalDateTime.now());
-        topicItem.setTopicName(topic.getName());
-        return topicItemRepository.save(topicItem);
+        SupportedTopic topic = SupportedTopic.of(article.getTopicName());
+        article.setPublicationDate(LocalDateTime.now());
+        article.setTopicName(topic.getName());
+        return topicItemRepository.save(article);
     }
 
     //please save multiple records for a specific topic at a time
     //only one person should use this endpoint service at a time to avoid duplicate offsets in the db
-    public TopicItemResponseDTO saveTopicItemList(List<TopicItem> topicItems, String topic){
-        if(topicItems == null || topicItems.size() == 0)
+    public TopicItemResponseDTO saveTopicItemList(List<Article> articles, String topic){
+        if(articles == null || articles.size() == 0)
             return TopicItemResponseDTO.builder().savedTopicItems(new ArrayList<>()).duplicateTopicItems(new ArrayList<>())
                     .build();
         TopicItemResponseDTO responseDTO = TopicItemResponseDTO.builder().build();
-        SupportedTopics validTopic = SupportedTopics.of(topic);
-        Long maximum = topicItemRepository.findLargestOffset(validTopic.getName());
-        AtomicLong max;
-        if(maximum != null)
-            max = new AtomicLong(maximum+1);
-        else
-            max = new AtomicLong(1L);
-        List<TopicItem> duplicates = new ArrayList<>();
-        List<TopicItem> saved = new ArrayList<>();
-        topicItems.forEach(e -> {
-            Optional<TopicItem> existing = topicItemRepository.findTopicItemByTopicNameAndTitle(validTopic.getName(), e.getTitle());
+        SupportedTopic validTopic = SupportedTopic.of(topic);
+        List<Article> duplicates = new ArrayList<>();
+        List<Article> saved = new ArrayList<>();
+        articles.forEach(e -> {
+            Optional<Article> existing = topicItemRepository.findTopicItemByTopicNameAndTitle(validTopic.getName(), e.getTitle());
             if(existing.isPresent())
                 duplicates.add(e);
             else{
-                Long l = max.get();
-                e.setOffset(l);
-                if(e.getDateAdded() == null)
-                    e.setDateAdded(LocalDateTime.now());
+                if(e.getPublicationDate() == null)
+                    e.setPublicationDate(LocalDateTime.now());
                 e.setTopicName(validTopic.getName());
-                TopicItem topicItem = topicItemRepository.save(e);
-                saved.add(topicItem);
-                max.incrementAndGet();
+                Article article = topicItemRepository.save(e);
+                saved.add(article);
             }
         });
         responseDTO.setSavedTopicItems(saved);
@@ -73,62 +63,62 @@ public class TopicItemServiceImpl implements TopicItemService{
     }
 
     public TopicItemResponseDTO uploadFile(MultipartFile file, String topic){
-        SupportedTopics validTopic = SupportedTopics.of(topic);
-        List<TopicItem> topicItems = ExcelHelper.rowsToObject(file, validTopic.getName());
-        return saveTopicItemList(topicItems, topic);
+        SupportedTopic validTopic = SupportedTopic.of(topic);
+        List<Article> articles = ExcelHelper.rowsToObject(file, validTopic.getName());
+        return saveTopicItemList(articles, topic);
     }
 
     @Override
-    public TopicItem update(TopicItem topicItem) {
-        SupportedTopics topic = SupportedTopics.of(topicItem.getTitle());
-        TopicItem existing = getTopicItemByTopicAndTitle(topic.getName(), topicItem.getTitle());
+    public Article update(Article article) {
+        SupportedTopic topic = SupportedTopic.of(article.getTopicName());
+        Article existing = getTopicItemByTopicAndTitle(topic.getName(), article.getTitle());
         if(existing != null){
-            existing.setTopicItemProperties(topicItem.getTopicItemProperties());
-            existing.setTag(topicItem.getTag());
-            existing.setDateTag(topicItem.getDateTag());
+            existing.setTopicItemProperties(article.getTopicItemProperties());
+            existing.setTag(article.getTag());
+            existing.setDateTag(article.getDateTag());
             existing = save(existing);
         }
         return existing;
     }
 
     public void deleteTopicItem(String topic, String title){
-        Optional<TopicItem> topicItem = topicItemRepository.findTopicItemByTopicNameAndTitle(topic, title);
+        Optional<Article> topicItem = topicItemRepository.findTopicItemByTopicNameAndTitle(topic, title);
         if(topicItem.isPresent())
             topicItemRepository.delete(topicItem.get());
     }
 
     @Override
-    public Optional<TopicItem> get(Long topicItemId) {
+    public Optional<Article> get(Long topicItemId) {
         return topicItemRepository.findById(topicItemId);
     }
 
     @Override
-    public Optional<TopicItem> get(String title) {
+    public Optional<Article> get(String title) {
         return topicItemRepository.findByTitle(title);
     }
 
-    public Optional<TopicItem> findTopicItemByOffset(Long userPickOffset){
-        return topicItemRepository.findByOffset(userPickOffset);
-    }
+//    public Optional<Article> findTopicItemByOffset(Long userPickOffset){
+//        return topicItemRepository.findByOffset(userPickOffset);
+//    }
 
-    public TopicItem getTopicItemByTopicAndTitle(String topicName, String topicItemName) {
-        SupportedTopics topic = SupportedTopics.of(topicName);
-        Optional<TopicItem> optionalTopicItem = topicItemRepository.findTopicItemByTopicNameAndTitle(topic.getName(), topicItemName);
+    public Article getTopicItemByTopicAndTitle(String topicName, String topicItemName) {
+        SupportedTopic topic = SupportedTopic.of(topicName);
+        Optional<Article> optionalTopicItem = topicItemRepository.findTopicItemByTopicNameAndTitle(topic.getName(), topicItemName);
         if(optionalTopicItem.isPresent())
             return optionalTopicItem.get();
         return null;
     }
 
     @Override
-    public Optional<List<TopicItem>> getTopicItems(String topicName) {
+    public Optional<List<Article>> getTopicItems(String topicName) {
         return topicItemRepository.findAllByTopicName(topicName);
     }
 
     @Override
-    public List<List<TopicItem>> getTopicItems(List<String> topicNames) {
-        List<List<TopicItem>> foundTopicItems = new ArrayList<>();
+    public List<List<Article>> getTopicItems(List<String> topicNames) {
+        List<List<Article>> foundTopicItems = new ArrayList<>();
         topicNames.forEach(topicName -> {
-            Optional<List<TopicItem>> optionalTopicItems = getTopicItems(topicName);
+            Optional<List<Article>> optionalTopicItems = getTopicItems(topicName);
             if(optionalTopicItems.isPresent()){
                 foundTopicItems.add(optionalTopicItems.get());
             }
@@ -136,17 +126,17 @@ public class TopicItemServiceImpl implements TopicItemService{
         return foundTopicItems;
     }
 
-    public TopicItem findByLatestTag(){
-        Optional<TopicItem> optionalTopicItem = topicItemRepository.findTopicItemByTag(tag);
+    public Article findByLatestTag(){
+        Optional<Article> optionalTopicItem = topicItemRepository.findTopicItemByTag(tag);
         if(optionalTopicItem.isPresent()){
             return optionalTopicItem.get();
         }
         return null;
     }
 
-    public TopicItem findByDateTag(){
+    public Article findByDateTag(){
         LocalDate localDate = LocalDate.now();
-        Optional<TopicItem> optionalTopicItem = topicItemRepository.findTopicItemByTag(localDate.toString());
+        Optional<Article> optionalTopicItem = topicItemRepository.findTopicItemByTag(localDate.toString());
         if(optionalTopicItem.isPresent()){
             return optionalTopicItem.get();
         }

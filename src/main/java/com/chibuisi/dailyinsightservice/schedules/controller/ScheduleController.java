@@ -2,7 +2,7 @@ package com.chibuisi.dailyinsightservice.schedules.controller;
 
 import com.chibuisi.dailyinsightservice.schedules.model.ScheduleDTO;
 import com.chibuisi.dailyinsightservice.schedules.service.ScheduleService;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopics;
+import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +65,7 @@ public class ScheduleController {
     public ResponseEntity getUserTopicSchedule(@RequestParam Long userId,
                                                   @RequestParam String topic,
                                                   @RequestParam String scheduleType){
-        SupportedTopics supportedTopic = SupportedTopics.of(topic);
+        SupportedTopic supportedTopic = SupportedTopic.of(topic);
         if(scheduleType.equalsIgnoreCase("all"))
             return new ResponseEntity(scheduleService.getUserAllScheduleByTopic(userId, supportedTopic),
                     HttpStatus.OK);
@@ -89,7 +89,7 @@ public class ScheduleController {
     @GetMapping("/topic")
     public ResponseEntity getTopicSchedule(@RequestParam String topic,
                                            @RequestParam String scheduleType){
-        SupportedTopics supportedTopic = SupportedTopics.of(topic);
+        SupportedTopic supportedTopic = SupportedTopic.of(topic);
         if(scheduleType.equalsIgnoreCase("all"))
             return new ResponseEntity(scheduleService
                     .getTopicAllSchedule(supportedTopic),
