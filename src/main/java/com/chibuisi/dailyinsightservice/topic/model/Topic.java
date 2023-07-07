@@ -22,8 +22,9 @@ public class Topic {
     private Integer id;
     @Column(unique = true)
     private String name;
+    @Column(length = 500)
     private String description;
-    @Column(length = 1500)
+    @Column(length = 2000)
     private String detail;
     private String imageUrl;
     private String keywords;

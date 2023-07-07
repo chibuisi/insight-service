@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.topic.service;
 
-import com.chibuisi.dailyinsightservice.topic.dto.TopicListRequest;
+import com.chibuisi.dailyinsightservice.topic.dto.ListTopicRequest;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicListResponse;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicRequest;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicResponse;
@@ -8,7 +8,6 @@ import com.chibuisi.dailyinsightservice.topic.model.Topic;
 import com.chibuisi.dailyinsightservice.topic.repository.TopicDao;
 import com.chibuisi.dailyinsightservice.topic.repository.TopicRepository;
 import com.chibuisi.dailyinsightservice.topic.transformer.TopicTransformer;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +30,7 @@ public class TopicService {
     public List<TopicResponse> save(List<TopicRequest> topicRequests) {
         //todo implement merge fields
         List<Topic> topics = TopicTransformer.fromRequestDtoList(topicRequests);
+        topics.forEach(topic -> topic.setCreatedDate(LocalDateTime.now()));
         List<String> topicNamesToSave = topics.stream().map(Topic::getName).collect(Collectors.toList());
         List<Topic> existingTopics = topicRepository.findByNameIn(topicNamesToSave);
         topics.removeIf(e -> existingTopics.stream().anyMatch(t -> e.getName().equals(t.getName().toLowerCase())));
@@ -102,19 +102,14 @@ public class TopicService {
         topicRepository.saveAll(topics);
     }
 
-    public TopicListResponse list(TopicListRequest request) {
+    public TopicListResponse list(ListTopicRequest request) {
         StringBuilder queryBuilder = new StringBuilder("SELECT t FROM Topic t WHERE 1 = 1");
-        Map<String, String> parameters = new HashMap<>();
-
-        if (request.getPageToken() != null && !request.getPageToken().equals("")) {
-            queryBuilder.append(" AND t.id > :token");
-            parameters.put("token", request.getPageToken());
-        }
+        Map<String, Object> parameters = new HashMap<>();
 
         if (request.getFilter() != null) {
             request.getFilter().forEach(filter -> {
                 String [] filterArr = filter.split("=");
-                if(filterArr[0] != null && !filterArr[0].equals("") && filterArr[1] != null && !filterArr[1].equals("")) {
+                if(filterArr.length > 1) {
                     switch (filterArr[0]) {
                         case "category":
                             queryBuilder.append(" AND t.category = :category");
@@ -122,33 +117,55 @@ public class TopicService {
                             break;
                         case "keywords":
                         case "keyword":
-                            String [] keywords = filterArr[1].split(",");
+                            String[] keywords = filterArr[1].split(",");
                             queryBuilder.append(" AND (");
-                            for(int i = 0; i < keywords.length; i++) {
+                            for (int i = 0; i < keywords.length; i++) {
                                 queryBuilder.append(" t.keywords LIKE :").append("keywords").append(i);
-                                parameters.put("keywords"+i, "%"+keywords[i]+"%");
-                                if(i < keywords.length - 1)
+                                parameters.put("keywords" + i, "%" + keywords[i] + "%");
+                                if (i < keywords.length - 1)
                                     queryBuilder.append(" OR ");
                             }
                             queryBuilder.append(")");
+                            break;
                         default:
                     }
                 }
-
             });
         }
 
         if (request.getOrderBy() != null) {
             String [] sort = request.getOrderBy().split(":");
+            Map<String, String> orderByKeyValuePair = new HashMap<>();
+            orderByKeyValuePair.put("createdDate", "createdDate");
+            orderByKeyValuePair.put("name", "name");
+            orderByKeyValuePair.put("modifiedDate", "modifiedDate");
+            orderByKeyValuePair.put("category", "category");
             if(sort.length > 1 && sort[1].equalsIgnoreCase("desc")) {
-                queryBuilder.append(" ORDER BY :sortOrder DESC");
-                parameters.put("sortOrder", sort[0]);
+                if (request.getPageToken() != null && !request.getPageToken().equals("")
+                        && Integer.parseInt(request.getPageToken()) != 0) {
+                    queryBuilder.append(" AND t.id < :token");
+                    parameters.put("token", Integer.parseInt(request.getPageToken()));
+                }
+                if(orderByKeyValuePair.containsKey(sort[0])) {
+                    queryBuilder.append(" ORDER BY t.").append(orderByKeyValuePair.get(sort[0])).append(" DESC");
+//                    parameters.put("sortOrder", orderByKeyValuePair.get(sort[0]));
+                }
             }
-            else {
-                queryBuilder.append(" ORDER BY :sortOrder ASC");
-                parameters.put("sortOrder", request.getOrderBy());
+            else if(orderByKeyValuePair.containsKey(sort[0])) {
+                if (request.getPageToken() != null && !request.getPageToken().equals("")
+                        && Integer.parseInt(request.getPageToken()) != 0) {
+                    queryBuilder.append(" AND t.id > :token");
+                    parameters.put("token", Integer.parseInt(request.getPageToken()));
+                }
+                queryBuilder.append(" ORDER BY t.").append(orderByKeyValuePair.get(sort[0])).append(" ASC");
+//                parameters.put("sortOrder", orderByKeyValuePair.get(sort[0]));
             }
         } else {
+            if (request.getPageToken() != null && !request.getPageToken().equals("")
+                    && Integer.parseInt(request.getPageToken()) != 0 ){
+                queryBuilder.append(" AND t.id > :token");
+                parameters.put("token", Integer.parseInt(request.getPageToken()));
+            }
             queryBuilder.append(" ORDER BY t.name ASC");
         }
 
@@ -161,10 +178,14 @@ public class TopicService {
             parameters.put("limit", String.valueOf(pageSize));
         } else {
             parameters.put("limit", String.valueOf(10));
-//            queryBuilder.append(" LIMIT 10");
         }
 
         List<Topic> topics = topicDao.list(queryBuilder.toString(), parameters);
+        Integer lastId = 0;
+        if(topics.size() == 1)
+            lastId = topics.get(0).getId();
+        if(topics.size() > 1)
+            lastId = topics.get(topics.size() - 1).getId();
 
         Long totalCount = topicDao.count();
         int pageSize = request.getPageSize() == null ? 10 : Integer.parseInt(request.getPageSize());
@@ -174,7 +195,12 @@ public class TopicService {
         String nextPageToken = nextPage < totalCount ? nextPage + "/" + totalPages : totalPages + "/" + totalPages;
 
         return TopicListResponse.builder()
-                .nextPageToken(nextPageToken)
+//                .nextPageToken(topics.size() > 0 ? nextPageToken : null)
+                .nextPageToken(topics.size() > 0
+                        && totalCount > topics.size()
+                        && nextPage < totalCount
+                        ? String.valueOf(lastId)
+                        : null)
                 .topicResponses(TopicTransformer.fromTopicList(topics))
                 .build();
     }

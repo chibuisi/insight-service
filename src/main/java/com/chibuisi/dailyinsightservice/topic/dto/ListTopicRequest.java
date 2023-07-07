@@ -1,5 +1,6 @@
 package com.chibuisi.dailyinsightservice.topic.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TopicListRequest {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ListTopicRequest {
     @JsonProperty("token")
     private String pageToken;
     @JsonProperty("size")

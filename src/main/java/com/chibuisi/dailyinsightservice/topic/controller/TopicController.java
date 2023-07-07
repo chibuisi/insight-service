@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.topic.controller;
 
-import com.chibuisi.dailyinsightservice.topic.dto.TopicListRequest;
+import com.chibuisi.dailyinsightservice.topic.dto.ListTopicRequest;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicRequest;
 import com.chibuisi.dailyinsightservice.topic.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class TopicController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<?> list(@Valid @RequestBody TopicListRequest topicListRequest) {
-        return new ResponseEntity<>(topicService.list(topicListRequest), HttpStatus.OK);
+    public ResponseEntity<?> list(@Valid @RequestBody ListTopicRequest listTopicRequest) {
+        return new ResponseEntity<>(topicService.list(listTopicRequest), HttpStatus.OK);
     }
 }

@@ -18,4 +18,5 @@ public class TopicResponse {
     private String imageLinks;
     private String createdBy;
     private String createdDate;
+    private String category;
 }

@@ -1,7 +1,5 @@
 package com.chibuisi.dailyinsightservice.topic.transformer;
 
-import com.chibuisi.dailyinsightservice.coach.CoachTransformer;
-import com.chibuisi.dailyinsightservice.coach.model.CoachDto;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicRequest;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicResponse;
 import com.chibuisi.dailyinsightservice.topic.model.Topic;
@@ -10,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TopicTransformer {
     public static Topic fromTopicRequest(TopicRequest topicRequest) {
@@ -24,6 +21,7 @@ public class TopicTransformer {
                 .imageLinks(imageLinks)
                 .createdBy(topicRequest.getCreatedBy())
                 .keywords(keywords)
+                .category(topicRequest.getCategory())
                 .build();
     }
 
@@ -44,8 +42,9 @@ public class TopicTransformer {
                 .imageUrl(topic.getImageUrl())
                 .imageLinks(topic.getImageLinks())
                 .keywords(topic.getKeywords())
-                .createdDate(LocalDateTime.now().format(formatter))
+                .createdDate(topic.getCreatedDate().format(formatter))
                 .createdBy(topic.getCreatedBy())
+                .category(topic.getCategory())
                 .build();
     }
 
@@ -73,6 +72,9 @@ public class TopicTransformer {
         }
         if (topicRequest.getKeywords() != null) {
             topic.setKeywords(topicRequest.getKeywords());
+        }
+        if (topicRequest.getCategory() != null) {
+            topic.setCategory(topicRequest.getCategory());
         }
         topic.setModifiedDate(LocalDateTime.now());
 
