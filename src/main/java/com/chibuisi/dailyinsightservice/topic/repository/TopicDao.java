@@ -20,7 +20,7 @@ public class TopicDao {
             if (entry.getKey().equals("limit")) continue;
             typedQuery.setParameter(entry.getKey(), entry.getValue());
         }
-        typedQuery.setMaxResults(Integer.parseInt((String) parameters.get("limit")));
+        typedQuery.setMaxResults((Integer) parameters.get("limit"));
         return typedQuery.getResultList();
     }
 

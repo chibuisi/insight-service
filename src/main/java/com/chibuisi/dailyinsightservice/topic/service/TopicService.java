@@ -1,7 +1,7 @@
 package com.chibuisi.dailyinsightservice.topic.service;
 
 import com.chibuisi.dailyinsightservice.topic.dto.ListTopicRequest;
-import com.chibuisi.dailyinsightservice.topic.dto.TopicListResponse;
+import com.chibuisi.dailyinsightservice.topic.dto.ListTopicResponse;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicRequest;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicResponse;
 import com.chibuisi.dailyinsightservice.topic.model.Topic;
@@ -102,9 +102,17 @@ public class TopicService {
         topicRepository.saveAll(topics);
     }
 
-    public TopicListResponse list(ListTopicRequest request) {
+    public ListTopicResponse list(ListTopicRequest request) {
         StringBuilder queryBuilder = new StringBuilder("SELECT t FROM Topic t WHERE 1 = 1");
         Map<String, Object> parameters = new HashMap<>();
+        int pageSizeValue;
+        try {
+            pageSizeValue = request.getPageSize() == null ? 10 : Integer.parseInt(request.getPageSize());
+            if(pageSizeValue < 1)
+                pageSizeValue = 10;
+        } catch (Exception ex) {
+            pageSizeValue = 10;
+        }
 
         if (request.getFilter() != null) {
             request.getFilter().forEach(filter -> {
@@ -112,8 +120,15 @@ public class TopicService {
                 if(filterArr.length > 1) {
                     switch (filterArr[0]) {
                         case "category":
-                            queryBuilder.append(" AND t.category = :category");
-                            parameters.put("category", filterArr[1]);
+                            String[] categories = filterArr[1].split(",");
+                            queryBuilder.append(" AND (");
+                            for (int i = 0; i < categories.length; i++) {
+                                queryBuilder.append(" t.category = :").append("category").append(i);
+                                parameters.put("category" + i, categories[i]);
+                                if (i < categories.length - 1)
+                                    queryBuilder.append(" OR ");
+                            }
+                            queryBuilder.append(")");
                             break;
                         case "keywords":
                         case "keyword":
@@ -148,7 +163,6 @@ public class TopicService {
                 }
                 if(orderByKeyValuePair.containsKey(sort[0])) {
                     queryBuilder.append(" ORDER BY t.").append(orderByKeyValuePair.get(sort[0])).append(" DESC");
-//                    parameters.put("sortOrder", orderByKeyValuePair.get(sort[0]));
                 }
             }
             else if(orderByKeyValuePair.containsKey(sort[0])) {
@@ -158,9 +172,9 @@ public class TopicService {
                     parameters.put("token", Integer.parseInt(request.getPageToken()));
                 }
                 queryBuilder.append(" ORDER BY t.").append(orderByKeyValuePair.get(sort[0])).append(" ASC");
-//                parameters.put("sortOrder", orderByKeyValuePair.get(sort[0]));
             }
-        } else {
+        }
+        else {
             if (request.getPageToken() != null && !request.getPageToken().equals("")
                     && Integer.parseInt(request.getPageToken()) != 0 ){
                 queryBuilder.append(" AND t.id > :token");
@@ -169,16 +183,8 @@ public class TopicService {
             queryBuilder.append(" ORDER BY t.name ASC");
         }
 
-        if (request.getPageSize() != null) {
-            int pageSize = 10;
-            try {
-                pageSize = Integer.parseInt(request.getPageSize());
-            } catch (Exception ignored) {
-            }
-            parameters.put("limit", String.valueOf(pageSize));
-        } else {
-            parameters.put("limit", String.valueOf(10));
-        }
+        //put page size in map
+        parameters.put("limit", pageSizeValue);
 
         List<Topic> topics = topicDao.list(queryBuilder.toString(), parameters);
         Integer lastId = 0;
@@ -188,19 +194,19 @@ public class TopicService {
             lastId = topics.get(topics.size() - 1).getId();
 
         Long totalCount = topicDao.count();
-        int pageSize = request.getPageSize() == null ? 10 : Integer.parseInt(request.getPageSize());
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-        int currentPage = request.getPageToken() == null ? 0 : Integer.parseInt(request.getPageToken());
+        int totalPages = (int) Math.ceil((double) totalCount / pageSizeValue);
+        int currentPage = request.getPageToken() == null ? 1 : Integer.parseInt(request.getPageToken());
         int nextPage = currentPage + 1;
-        String nextPageToken = nextPage < totalCount ? nextPage + "/" + totalPages : totalPages + "/" + totalPages;
 
-        return TopicListResponse.builder()
-//                .nextPageToken(topics.size() > 0 ? nextPageToken : null)
+        boolean hasResults = topics.size() > 0;
+        return ListTopicResponse.builder()
                 .nextPageToken(topics.size() > 0
                         && totalCount > topics.size()
-                        && nextPage < totalCount
+                        && nextPage <= totalCount
                         ? String.valueOf(lastId)
                         : null)
+                .pageSize(hasResults ? String.valueOf(pageSizeValue) : null)
+                .totalPagesSize(hasResults ? String.valueOf(totalPages) : null)
                 .topicResponses(TopicTransformer.fromTopicList(topics))
                 .build();
     }

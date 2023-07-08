@@ -11,7 +11,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TopicListResponse {
+public class ListTopicResponse {
     private String nextPageToken;
+    private String pageSize;
+    private String totalPagesSize;
     private List<TopicResponse> topicResponses;
 }
