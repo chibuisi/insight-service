@@ -1,4 +1,4 @@
-package com.chibuisi.dailyinsightservice.coach.model;
+package com.chibuisi.dailyinsightservice.coach.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CoachDto {
+public class CoachResponseDto {
     private Long userId;
     private String firstname;
     private String lastname;

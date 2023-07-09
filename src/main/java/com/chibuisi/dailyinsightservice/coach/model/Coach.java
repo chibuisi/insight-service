@@ -1,4 +1,4 @@
-package com.chibuisi.dailyinsightservice.coach;
+package com.chibuisi.dailyinsightservice.coach.model;
 
 import com.chibuisi.dailyinsightservice.article.model.Article;
 import com.chibuisi.dailyinsightservice.topic.model.Topic;
@@ -22,6 +22,7 @@ public class Coach {
     private Long id;
     private Long userId;
     private String firstname;
+    private String email;
     private String lastname;
     private String specialization;
     private String bio;

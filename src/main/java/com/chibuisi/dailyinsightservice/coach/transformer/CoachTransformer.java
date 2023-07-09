@@ -1,6 +1,7 @@
-package com.chibuisi.dailyinsightservice.coach;
+package com.chibuisi.dailyinsightservice.coach.transformer;
 
-import com.chibuisi.dailyinsightservice.coach.model.CoachDto;
+import com.chibuisi.dailyinsightservice.coach.model.Coach;
+import com.chibuisi.dailyinsightservice.coach.dto.CoachDto;
 import com.chibuisi.dailyinsightservice.topic.model.Topic;
 
 import java.time.LocalDateTime;

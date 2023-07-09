@@ -1,7 +1,7 @@
 package com.chibuisi.dailyinsightservice.topic.model;
 
 import com.chibuisi.dailyinsightservice.article.model.Article;
-import com.chibuisi.dailyinsightservice.coach.Coach;
+import com.chibuisi.dailyinsightservice.coach.model.Coach;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

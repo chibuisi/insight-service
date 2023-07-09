@@ -1,8 +1,8 @@
 package com.chibuisi.dailyinsightservice.coach.service;
 
-import com.chibuisi.dailyinsightservice.coach.Coach;
-import com.chibuisi.dailyinsightservice.coach.CoachTransformer;
-import com.chibuisi.dailyinsightservice.coach.model.CoachDto;
+import com.chibuisi.dailyinsightservice.coach.model.Coach;
+import com.chibuisi.dailyinsightservice.coach.transformer.CoachTransformer;
+import com.chibuisi.dailyinsightservice.coach.dto.CoachDto;
 import com.chibuisi.dailyinsightservice.coach.repository.CoachRepository;
 import com.chibuisi.dailyinsightservice.springsecapp.model.UserAccount;
 import com.chibuisi.dailyinsightservice.springsecapp.service.MyUserDetailsService;

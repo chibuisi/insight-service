@@ -1,14 +1,12 @@
 package com.chibuisi.dailyinsightservice.article.model;
 
-import com.chibuisi.dailyinsightservice.coach.Coach;
-import com.chibuisi.dailyinsightservice.topic.model.SupportedTopic;
+import com.chibuisi.dailyinsightservice.coach.model.Coach;
 import com.chibuisi.dailyinsightservice.topic.model.TopicItemProperties;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor

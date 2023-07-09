@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.article.model;
 
-import com.chibuisi.dailyinsightservice.coach.model.CoachDto;
+import com.chibuisi.dailyinsightservice.coach.dto.CoachDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

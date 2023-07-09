@@ -1,9 +1,8 @@
 package com.chibuisi.dailyinsightservice.featuredItems.service;
 
-import com.chibuisi.dailyinsightservice.coach.model.CoachDto;
+import com.chibuisi.dailyinsightservice.coach.dto.CoachDto;
 import com.chibuisi.dailyinsightservice.coach.service.CoachService;
 import com.chibuisi.dailyinsightservice.featuredItems.model.FeaturedItemsResponse;
-import com.chibuisi.dailyinsightservice.featuredItems.model.FeaturedTopicDTO;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicResponse;
 import com.chibuisi.dailyinsightservice.topic.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FeaturedItemsService {

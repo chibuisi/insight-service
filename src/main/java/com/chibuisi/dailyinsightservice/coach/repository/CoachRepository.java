@@ -1,6 +1,6 @@
 package com.chibuisi.dailyinsightservice.coach.repository;
 
-import com.chibuisi.dailyinsightservice.coach.Coach;
+import com.chibuisi.dailyinsightservice.coach.model.Coach;
 import com.chibuisi.dailyinsightservice.topic.model.Topic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -53,7 +53,7 @@ public class TopicController {
     }
 
     @PostMapping("/unfeature")
-    public ResponseEntity<?> featureTopic(@RequestBody List<String> topicNames) {
+    public ResponseEntity<?> unFeatureTopics(@RequestBody List<String> topicNames) {
         topicService.unFeatureTopics(topicNames);
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
