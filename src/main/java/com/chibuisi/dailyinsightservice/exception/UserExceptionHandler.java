@@ -1,16 +1,21 @@
 package com.chibuisi.dailyinsightservice.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class UserAlreadyExistsExceptionHandler {
+public class UserExceptionHandler {
     @ExceptionHandler(UserAlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public String userAlreadyExistsMessage(UserAlreadyExistException exception){
+        return exception.getMessage();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String userNotFoundMessage(UserNotFoundException exception){
         return exception.getMessage();
     }
 

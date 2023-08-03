@@ -2,6 +2,7 @@ package com.chibuisi.dailyinsightservice.featuredItems.model;
 
 import com.chibuisi.dailyinsightservice.article.model.ArticleResponseDto;
 import com.chibuisi.dailyinsightservice.coach.dto.CoachDto;
+import com.chibuisi.dailyinsightservice.coach.dto.CoachResponseDto;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +18,5 @@ import java.util.List;
 public class FeaturedItemsResponse {
     private List<TopicResponse> topics;
     private List<ArticleResponseDto> articles;
-    private List<CoachDto> coaches;
+    private List<CoachResponseDto> coaches;
 }

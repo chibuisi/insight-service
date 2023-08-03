@@ -1,6 +1,7 @@
 package com.chibuisi.dailyinsightservice.featuredItems.service;
 
 import com.chibuisi.dailyinsightservice.coach.dto.CoachDto;
+import com.chibuisi.dailyinsightservice.coach.dto.CoachResponseDto;
 import com.chibuisi.dailyinsightservice.coach.service.CoachService;
 import com.chibuisi.dailyinsightservice.featuredItems.model.FeaturedItemsResponse;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicResponse;
@@ -26,7 +27,7 @@ public class FeaturedItemsService {
     public FeaturedItemsResponse getFeaturedItems() {
         List<TopicResponse> featuredTopics = topicService.getFeaturedTopics(0, numOfFeaturedTopics);
 
-        List<CoachDto> featuredCoaches = coachService.getActiveFeaturedCoaches(0,3);
+        List<CoachResponseDto> featuredCoaches = coachService.getActiveFeaturedCoaches(0,3);
 
         return FeaturedItemsResponse.builder()
                 .topics(featuredTopics)

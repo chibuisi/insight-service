@@ -27,6 +27,7 @@ public class Topic {
     @Column(length = 2000)
     private String detail;
     private String imageUrl;
+    @Column(length = 2000)
     private String keywords;
     private String category;
     @ManyToOne(fetch = FetchType.EAGER)

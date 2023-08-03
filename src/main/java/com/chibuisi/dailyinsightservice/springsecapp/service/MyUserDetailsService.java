@@ -114,4 +114,7 @@ public class MyUserDetailsService implements UserDetailsService {
 	public List<UserAccount> findUsersById(List<Long> userIds) {
 		return userRepository.findAllByIdIn(userIds);
 	}
+	public Optional<UserAccount> findUserById(Long userId) {
+		return userRepository.findById(userId);
+	}
 }

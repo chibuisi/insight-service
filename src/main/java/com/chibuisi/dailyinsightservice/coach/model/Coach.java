@@ -22,15 +22,23 @@ public class Coach {
     private Long id;
     private Long userId;
     private String firstname;
+    @Column(length = 500)
     private String email;
     private String lastname;
+    @Column(length = 500)
     private String specialization;
+    @Column(length = 5000)
     private String bio;
     private String phone;
+    @Column(length = 500)
     private String availability;
+    @Column(length = 1000)
     private String imageLinks;
+    @Column(length = 500)
     private String languages;
+    @Column(length = 1000)
     private String certifications;
+    @Column(length = 5000)
     private String experience;
     private Boolean featured;
     private LocalDateTime featuredDate;
@@ -42,10 +50,12 @@ public class Coach {
     )
     private List<Topic> topics;
     private Boolean active;
-    private LocalDateTime dateBecameCoach;
+    private LocalDateTime dateActivated;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "coach_article",
             joinColumns = @JoinColumn(name = "coach_id"),
             inverseJoinColumns = @JoinColumn(name = "article_id"))
     private List<Article> articles;
+    private LocalDateTime coachApplicationDate;
+    private LocalDateTime dateDeactivated;
 }
