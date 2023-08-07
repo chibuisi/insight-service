@@ -47,10 +47,7 @@ public class TemplateService {
         Optional<Article> optionalTopicItem = Optional.empty();
 //        if(userTopicItemOffset != null)
 //            optionalTopicItem = topicItemService.findTopicItemByOffset(userTopicItemOffset);
-        Article article;
-        article = optionalTopicItem.orElseGet(() -> topicItemService.findByLatestTag());
-        if(article == null)
-            article = topicItemService.findByDateTag();
+        Article article = null;
         if(article == null)
             return;
         Newsletter newsletter = Newsletter.builder()
@@ -110,7 +107,6 @@ public class TemplateService {
         Map<String, Object> properties = new HashMap<>();
         ReadySchedule readySchedule = templateHelper.getReadySchedule();
         List<ItemKey> itemKeys = new ArrayList<>();
-        model.put("topic", capitaliseFirstLetter(article.getTopicName()));
         model.put("title", capitaliseFirstLetter(article.getTitle()));
         model.put("scheduleType", readySchedule.getScheduleType().getValue().toLowerCase());
         topicItemProperties.forEach(e -> {

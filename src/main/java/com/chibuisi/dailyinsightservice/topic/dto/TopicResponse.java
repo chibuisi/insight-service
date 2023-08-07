@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class TopicResponse {
+    private String id;
     private String name;
     private String description;
     private String detail;

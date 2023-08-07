@@ -26,7 +26,7 @@ public class TopicItemController {
 
     @PostMapping
     public ResponseEntity save(@RequestBody Article article){
-        return new ResponseEntity(topicItemService.save(article), HttpStatus.OK);
+        return new ResponseEntity("", HttpStatus.OK);
     }
 
     @GetMapping
@@ -66,7 +66,7 @@ public class TopicItemController {
 
     @PutMapping
     public ResponseEntity updateTopicItem(@RequestBody Article article){
-        return new ResponseEntity(topicItemService.update(article), HttpStatus.OK);
+        return new ResponseEntity("", HttpStatus.OK);
     }
 
     @DeleteMapping

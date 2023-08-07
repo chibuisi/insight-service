@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TopicItemRepository extends JpaRepository<Article, Long> {
-    public Optional<Article> findTopicItemByTopicNameAndTitle(String topic, String title);
-    public Optional<List<Article>> findAllByTopicName(String name);
     public Optional<Article> findByTitle(String title);
-    public Optional<Article> findTopicItemByTag(String tag);
 //    public Optional<Article> findByOffset(Long offset);
 //    @Query("SELECT max(t.offset) FROM Article t where t.topicName = :topicName")
 //    Long findLargestOffset(@Param("topicName") String topicName);

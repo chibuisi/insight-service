@@ -35,6 +35,7 @@ public class TopicTransformer {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         return TopicResponse.builder()
+                .id(String.valueOf(topic.getId()))
                 .name(topic.getName())
                 .description(topic.getDescription())
                 .detail(topic.getDetail())

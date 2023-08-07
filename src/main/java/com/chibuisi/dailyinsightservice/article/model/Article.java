@@ -19,33 +19,34 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String topicName;
+    private Long topicId;
     private String category;
     @Column(unique = true)
     private String title;
-    private String authorName;
-    private String content; //todo create object
+    private Long authorUserId;
+    @Column(length = 100000)
+    private String content; //add content format
     private LocalDateTime publicationDate;
+    @Column(length = 10000)
     private String tags; //todo create object
+    @Column(length = 10000)
     private String keywords; //todo create object
-    private String tag; //todo create object
     private String dateTag;
-    private Boolean advancedArticle;
-    private Long ownerUserId;
-    private String featuredImage;
+    private boolean isAdvancedArticle;
+    @Column(length = 10000)
     private String summary;
+    @Column(length = 10000)
     private String metaDescription;
+    @Column(length = 10000)
     private String seoTitle;
-    private String authorBio;
-    private String relatedLinks; //todo create object
-    private String comments; //todo create object
     private String readTime;
-    private Long numberTimesRead;
+    private Long readTimes;
     private Long wordCount;
-    @ManyToMany(mappedBy = "articles", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "articles", fetch = FetchType.LAZY)
     private List<Coach> coaches;
     private Boolean featured;
     private LocalDateTime featuredDate;
+    private String featuredImageLink;
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TopicItemProperties> topicItemProperties;
 //    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

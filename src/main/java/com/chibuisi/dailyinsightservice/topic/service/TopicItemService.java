@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TopicItemService {
-    public Article save(Article article);
+//    public Article save(Article article);
     public TopicItemResponseDTO saveTopicItemList(List<Article> articles, String topic);
-    public Article update(Article article);
+//    public Article update(Article article);
     public Optional<Article> get(Long topicItemId);
     public Optional<Article> get(String topicItemId);
     public void deleteTopicItem(String topic, String title);

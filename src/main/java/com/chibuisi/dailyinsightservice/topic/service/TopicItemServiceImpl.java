@@ -23,17 +23,6 @@ public class TopicItemServiceImpl implements TopicItemService{
     private String tag;
     @Autowired
     private TopicItemRepository topicItemRepository;
-    @Override
-    public Article save(Article article) {
-        Optional<Article> existing = topicItemRepository.findByTitle(article.getTitle());
-        if(existing.isPresent()){
-            return null;
-        }
-        SupportedTopic topic = SupportedTopic.of(article.getTopicName());
-        article.setPublicationDate(LocalDateTime.now());
-        article.setTopicName(topic.getName());
-        return topicItemRepository.save(article);
-    }
 
     //please save multiple records for a specific topic at a time
     //only one person should use this endpoint service at a time to avoid duplicate offsets in the db
@@ -46,13 +35,13 @@ public class TopicItemServiceImpl implements TopicItemService{
         List<Article> duplicates = new ArrayList<>();
         List<Article> saved = new ArrayList<>();
         articles.forEach(e -> {
-            Optional<Article> existing = topicItemRepository.findTopicItemByTopicNameAndTitle(validTopic.getName(), e.getTitle());
+            Optional<Article> existing = Optional.empty();
             if(existing.isPresent())
                 duplicates.add(e);
             else{
                 if(e.getPublicationDate() == null)
                     e.setPublicationDate(LocalDateTime.now());
-                e.setTopicName(validTopic.getName());
+//                e.setTopicName(validTopic.getName());
                 Article article = topicItemRepository.save(e);
                 saved.add(article);
             }
@@ -68,21 +57,8 @@ public class TopicItemServiceImpl implements TopicItemService{
         return saveTopicItemList(articles, topic);
     }
 
-    @Override
-    public Article update(Article article) {
-        SupportedTopic topic = SupportedTopic.of(article.getTopicName());
-        Article existing = getTopicItemByTopicAndTitle(topic.getName(), article.getTitle());
-        if(existing != null){
-            existing.setTopicItemProperties(article.getTopicItemProperties());
-            existing.setTag(article.getTag());
-            existing.setDateTag(article.getDateTag());
-            existing = save(existing);
-        }
-        return existing;
-    }
-
     public void deleteTopicItem(String topic, String title){
-        Optional<Article> topicItem = topicItemRepository.findTopicItemByTopicNameAndTitle(topic, title);
+        Optional<Article> topicItem = Optional.empty();
         if(topicItem.isPresent())
             topicItemRepository.delete(topicItem.get());
     }
@@ -103,7 +79,7 @@ public class TopicItemServiceImpl implements TopicItemService{
 
     public Article getTopicItemByTopicAndTitle(String topicName, String topicItemName) {
         SupportedTopic topic = SupportedTopic.of(topicName);
-        Optional<Article> optionalTopicItem = topicItemRepository.findTopicItemByTopicNameAndTitle(topic.getName(), topicItemName);
+        Optional<Article> optionalTopicItem = Optional.empty();
         if(optionalTopicItem.isPresent())
             return optionalTopicItem.get();
         return null;
@@ -111,7 +87,7 @@ public class TopicItemServiceImpl implements TopicItemService{
 
     @Override
     public Optional<List<Article>> getTopicItems(String topicName) {
-        return topicItemRepository.findAllByTopicName(topicName);
+        return Optional.empty();
     }
 
     @Override
@@ -126,20 +102,4 @@ public class TopicItemServiceImpl implements TopicItemService{
         return foundTopicItems;
     }
 
-    public Article findByLatestTag(){
-        Optional<Article> optionalTopicItem = topicItemRepository.findTopicItemByTag(tag);
-        if(optionalTopicItem.isPresent()){
-            return optionalTopicItem.get();
-        }
-        return null;
-    }
-
-    public Article findByDateTag(){
-        LocalDate localDate = LocalDate.now();
-        Optional<Article> optionalTopicItem = topicItemRepository.findTopicItemByTag(localDate.toString());
-        if(optionalTopicItem.isPresent()){
-            return optionalTopicItem.get();
-        }
-        return null;
-    }
 }

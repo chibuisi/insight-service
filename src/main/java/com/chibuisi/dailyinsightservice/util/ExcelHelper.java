@@ -98,11 +98,6 @@ public class ExcelHelper {
                     topicAndTitleIndex.add(titleIndex);
                 }
 
-                if(tagIndex != -1){
-                    article.setTag(currentRow.getCell(tagIndex).getStringCellValue());
-                    topicAndTitleIndex.add(tagIndex);
-                }
-
                 if(dateTagIndex != -1){
                     article.setDateTag(currentRow.getCell(dateTagIndex).getStringCellValue());
                     topicAndTitleIndex.add(dateTagIndex);

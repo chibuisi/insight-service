@@ -52,6 +52,10 @@ INSERT into role(id, role_name)
 select 12,'ROLE_COACH'
 where not exists(select id, role_name from role where id = 12 and role_name = 'ROLE_COACH');
 
+INSERT into role(id, role_name)
+select 13,'ROLE_CREATE_ARTICLE'
+where not exists(select id, role_name from role where id = 13 and role_name = 'ROLE_CREATE_ARTICLE');
+
 INSERT INTO user_account (id,email,username,firstname,lastname,password)
 SELECT 1,'ckamiaka2019@gmail.com', 'ckamiaka',
        'Chibuisi','Amiaka','$2a$12$ESK4BePk5B4cSek39pI3y.tGLeab1E0yqwFh30cY.r4l9BvcATH2e'
@@ -92,4 +96,8 @@ where not exists(select user_id, role_id from user_account_roles where user_id =
 insert into user_account_roles(user_id, role_id)
 select 1,12
 where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 12);
+
+insert into user_account_roles(user_id, role_id)
+select 1,13
+where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 13);
 

@@ -1,7 +1,6 @@
 package com.chibuisi.dailyinsightservice.featuredItems.model;
 
-import com.chibuisi.dailyinsightservice.article.model.ArticleResponseDto;
-import com.chibuisi.dailyinsightservice.coach.dto.CoachDto;
+import com.chibuisi.dailyinsightservice.article.dto.ArticleResponseDto;
 import com.chibuisi.dailyinsightservice.coach.dto.CoachResponseDto;
 import com.chibuisi.dailyinsightservice.topic.dto.TopicResponse;
 import lombok.AllArgsConstructor;
