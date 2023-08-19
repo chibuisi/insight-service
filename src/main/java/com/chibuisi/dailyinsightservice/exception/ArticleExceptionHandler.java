@@ -6,16 +6,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class TopicExceptionHandler {
-    @ExceptionHandler(TopicAlreadyExistException.class)
+public class ArticleExceptionHandler {
+    @ExceptionHandler(ArticleAlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String topicAlreadyExistsMessage(TopicAlreadyExistException exception){
+    public String articleAlreadyExistsMessage(ArticleAlreadyExistException exception){
         return exception.getMessage();
     }
 
-    @ExceptionHandler(TopicNotFoundException.class)
+    @ExceptionHandler(ArticleNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String topicNotFoundMessage(TopicNotFoundException exception){
+    public String userNotFoundMessage(ArticleNotFoundException exception){
         return exception.getMessage();
     }
+
 }

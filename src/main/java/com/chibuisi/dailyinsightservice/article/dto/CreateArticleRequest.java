@@ -25,15 +25,15 @@ public class CreateArticleRequest {
     @NotBlank(message = "title is required")
     @Size(max = 255, message = "title must be maximum {max} characters")
     private String title;
-    @NotNull(message = "author User Id is required")
-    @Digits(integer = 10, fraction = 0, message = "author User Id must have a valid value")
-    private Long authorUserId;
-    @NotBlank(message = "title is required")
-    @Size(max = 100000, message = "title must be maximum {max} characters")
-    private String content;
+    //Must be selected from a list of our categories to avoid duplicates
     @NotBlank(message = "category is required")
     @Size(max = 255, message = "category must be maximum {max} characters")
     private String category;
+    @NotNull(message = "author User Id is required")
+    @Digits(integer = 10, fraction = 0, message = "author User Id must have a valid value")
+    private Long authorUserId;
+    @NotBlank(message = "content is required")
+    private String content;
     @NotNull(message = "tags must not be null")
     @Size(max = 10, message = "tag(s) must not exceed {max}")
     private List<@Size(max = 50, message = "tag(s) must be between {min} and {max} characters") String> tags; //todo create object
@@ -41,14 +41,17 @@ public class CreateArticleRequest {
     @Size(max = 10, message = "keyword(s) must not exceed {max}")
     private List<@Size(max = 50, message = "keyword(s) must be between {min} and {max} characters") String> keywords; //todo create object
     @NotBlank(message = "summary is required")
-    @Size(max = 10000, message = "summary must be maximum {max} characters")
+    @Size(max = 5000, message = "summary must be maximum {max} characters")
     private String summary;
     @NotBlank(message = "meta description is required")
-    @Size(max = 10000, message = "meta description must be maximum {max} characters")
+    @Size(max = 5000, message = "meta description must be maximum {max} characters")
     private String metaDescription;
     @NotBlank(message = "seo title is required")
-    @Size(max = 10000, message = "seo title must be maximum {max} characters")
+    @Size(max = 5000, message = "seo title must be maximum {max} characters")
     private String seoTitle;
+    @NotBlank(message = "read time is required")
+    @Size(max = 255, message = "read time must be maximum {max} characters")
+    private String readTime;
     @NotNull(message = "is advanced topic must not be null")
     private boolean isAdvancedArticle;
     private List<TopicItemProperties> topicItemProperties;

@@ -24,32 +24,30 @@ public class Article {
     @Column(unique = true)
     private String title;
     private Long authorUserId;
-    @Column(length = 100000)
+    @Column(columnDefinition = "TEXT")
     private String content; //add content format
     private LocalDateTime publicationDate;
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT")
     private String tags; //todo create object
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT")
     private String keywords; //todo create object
     private String dateTag;
     private boolean isAdvancedArticle;
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT")
     private String summary;
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT")
     private String metaDescription;
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT")
     private String seoTitle;
     private String readTime;
     private Long readTimes;
-    private Long wordCount;
+    private Integer wordCount;
     @ManyToMany(mappedBy = "articles", fetch = FetchType.LAZY)
     private List<Coach> coaches;
     private Boolean featured;
     private LocalDateTime featuredDate;
     private String featuredImageLink;
+    private Boolean active;
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TopicItemProperties> topicItemProperties;
-//    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "itemId")
-//    private PickOffset pickOffset;
 }

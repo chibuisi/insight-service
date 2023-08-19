@@ -14,7 +14,10 @@ import com.chibuisi.dailyinsightservice.user.model.User;
 import com.chibuisi.dailyinsightservice.user.service.UserService;
 import com.chibuisi.dailyinsightservice.usersubscription.model.Subscription;
 import com.chibuisi.dailyinsightservice.usersubscription.service.SubscriptionService;
+import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -126,6 +129,7 @@ public class ScheduleService {
             return existing;
         }
     }
+    @Retryable(value = { JDBCConnectionException.class }, maxAttempts = 3, backoff = @Backoff(delay = 10000))
     public void saveDailySchedules(List<DailyCustomSchedule> dailyCustomSchedules){
         dailyCustomScheduleRepository.saveAll(dailyCustomSchedules);
     }
