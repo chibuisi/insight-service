@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @RestController
@@ -48,33 +47,28 @@ public class ArticleController {
         return new ResponseEntity<>(articleService.updateArticle(updateArticleRequest), HttpStatus.OK);
     }
 
-    @PutMapping("/activate")
+    @PutMapping("/activeStatus")
     @PreAuthorize("hasRole('ROLE_MANAGE_ARTICLE')")
-    public ResponseEntity<?> activateArticle(@Valid @RequestBody UpdateArticleRequest updateArticleRequest) {
-        return new ResponseEntity<>(updateArticleRequest, HttpStatus.OK);
+    public ResponseEntity<?> updateActiveStatus(@Valid @RequestBody UpdateArticleRequest updateArticleRequest) {
+        String id = updateArticleRequest.getId();
+        Boolean status = updateArticleRequest.getActiveStatus();
+        articleService.updateArticleActiveStatus(id, status);
+        return new ResponseEntity<>("Updated", HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/deactivate")
-    @PreAuthorize("hasRole('ROLE_MANAGE_ARTICLE')")
-    public ResponseEntity<?> deActivateArticle(@Valid @RequestBody UpdateArticleRequest updateArticleRequest) {
-        return new ResponseEntity<>(updateArticleRequest, HttpStatus.OK);
-    }
-
-    @PutMapping("/feature")
+    @PutMapping("/featuredStatus")
     @PreAuthorize("hasRole('ROLE_FEATURE_ARTICLE')")
     public ResponseEntity<?> featureArticle(@Valid @RequestBody UpdateArticleRequest updateArticleRequest) {
-        return new ResponseEntity<>(updateArticleRequest, HttpStatus.OK);
-    }
-
-    @PutMapping("/de-feature")
-    @PreAuthorize("hasRole('ROLE_FEATURE_ARTICLE')")
-    public ResponseEntity<?> deFeatureArticle(@Valid @RequestBody UpdateArticleRequest updateArticleRequest) {
-        return new ResponseEntity<>(updateArticleRequest, HttpStatus.OK);
+        String id = updateArticleRequest.getId();
+        Boolean featuredStatus = updateArticleRequest.getFeaturedStatus();
+        articleService.updateArticleFeaturedStatus(id, featuredStatus);
+        return new ResponseEntity<>("Updated", HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_DELETE_ARTICLE')")
-    public ResponseEntity<?> deleteArticle(@PathVariable Long id) {
+    public ResponseEntity<?> deleteArticle(@PathVariable String id) {
+        articleService.deleteArticle(id);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 

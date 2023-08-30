@@ -33,7 +33,7 @@ public class ArticleService {
             throw new ArticleAlreadyExistException("Article with title and category already exist");
         Article article = ArticleTransformer.fromCreateArticleRequest(createArticleRequest);
         article.setWordCount(createArticleRequest.getContent().split(" ").length);
-        article.setPublicationDate(LocalDateTime.now());
+        article.setPublishedDate(LocalDateTime.now());
         article = articleRepository.save(article);
 
         return ArticleTransformer.toResponseDto(article);
@@ -76,8 +76,56 @@ public class ArticleService {
 
     public ArticleResponseDto updateArticle(UpdateArticleRequest updateArticleRequest) {
         //find existing article and verify new title does not exist
-        Article article = ArticleTransformer.applyUpdates(updateArticleRequest, Article.builder().build());
+        Optional<Article> optionalExistingArticle = articleRepository
+                .findById(Long.valueOf(updateArticleRequest.getId()));
+        if(!optionalExistingArticle.isPresent())
+            throw new ArticleNotFoundException("No article to update by id found");
+        //if there is a new title, verify title not taken on the category
+        Article existing = optionalExistingArticle.get();
+        if(!StringUtils.isBlank(updateArticleRequest.getTitle())
+                    && existing.getCategory().equals(updateArticleRequest.getCategory())
+                    && !existing.getTitle().equals(updateArticleRequest.getTitle())) {
+            Optional<Article> optionalArticle = articleRepository.findArticleByTitleAndCategory(
+                    updateArticleRequest.getTitle(), updateArticleRequest.getCategory()
+            );
+            if(optionalArticle.isPresent())
+                throw new ArticleNotFoundException("Article by new title and category already exist");
+        }
+
+        Article article = ArticleTransformer.applyUpdates(updateArticleRequest, existing);
         return ArticleTransformer.toResponseDto(article);
+    }
+
+    public void updateArticleActiveStatus(String articleId, Boolean status) {
+        Optional<Article> optionalExistingArticle = articleRepository
+                .findById(Long.valueOf(articleId));
+        if(!optionalExistingArticle.isPresent())
+            throw new ArticleNotFoundException("No article to update by id found");
+        Article article = optionalExistingArticle.get();
+        article.setActiveStatus(status);
+        article.setLastUpdateTime(LocalDateTime.now());
+        articleRepository.save(article);
+    }
+
+    public void updateArticleFeaturedStatus(String articleId, Boolean status) {
+        Optional<Article> optionalExistingArticle = articleRepository
+                .findById(Long.valueOf(articleId));
+        if(!optionalExistingArticle.isPresent())
+            throw new ArticleNotFoundException("No article to update by id found");
+        Article article = optionalExistingArticle.get();
+        article.setFeatured(status);
+        article.setFeaturedDate(LocalDateTime.now());
+        article.setLastUpdateTime(LocalDateTime.now());
+        articleRepository.save(article);
+    }
+
+    public void deleteArticle(String articleId){
+        Optional<Article> optionalExistingArticle = articleRepository
+                .findById(Long.valueOf(articleId));
+        if(!optionalExistingArticle.isPresent())
+            throw new ArticleNotFoundException("No article to delete by id found");
+        Article article = optionalExistingArticle.get();
+        articleRepository.delete(article);
     }
 
     private String[] getFilter(String filter) {

@@ -21,12 +21,12 @@ public class Article {
     private Long id;
     private Long topicId;
     private String category;
-    @Column(unique = true)
+//    we can have same title in different categories
+//    @Column(unique = true)
     private String title;
     private Long authorUserId;
     @Column(columnDefinition = "TEXT")
     private String content; //add content format
-    private LocalDateTime publicationDate;
     @Column(columnDefinition = "TEXT")
     private String tags; //todo create object
     @Column(columnDefinition = "TEXT")
@@ -46,8 +46,13 @@ public class Article {
     private List<Coach> coaches;
     private Boolean featured;
     private LocalDateTime featuredDate;
+    private LocalDateTime unFeaturedDate;
     private String featuredImageLink;
-    private Boolean active;
+    private Boolean activeStatus;
+    private LocalDateTime publishedDate;
+    private LocalDateTime deactivatedDate;
+    private LocalDateTime createTime;
+    private LocalDateTime lastUpdateTime;
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TopicItemProperties> topicItemProperties;
 }

@@ -7,6 +7,7 @@ import com.chibuisi.dailyinsightservice.article.model.Article;
 import com.chibuisi.dailyinsightservice.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,16 +24,20 @@ public class ArticleTransformer {
                 .seoTitle(createArticleRequest.getSeoTitle())
                 .summary(createArticleRequest.getSummary())
                 .readTime(createArticleRequest.getReadTime())
+                .featuredImageLink(createArticleRequest.getFeaturedImageLink())
+                .activeStatus(Boolean.FALSE)
                 .topicItemProperties(createArticleRequest.getTopicItemProperties())
+                .createTime(LocalDateTime.now())
+                .lastUpdateTime(LocalDateTime.now())
                 .build();
     }
 
     public static ArticleResponseDto toResponseDto(Article article) {
         if(article == null)
             return null;
-        String publicationDate = article.getPublicationDate() == null
+        String publicationDate = article.getPublishedDate() == null
                 ? null
-                : article.getPublicationDate().format(DateUtil.getDateFormat());
+                : article.getPublishedDate().format(DateUtil.getDateFormat());
         return ArticleResponseDto.builder()
                 .id(String.valueOf(article.getId()))
                 .authorUserId(String.valueOf(article.getAuthorUserId()))
@@ -64,12 +69,31 @@ public class ArticleTransformer {
 
     public static Article applyUpdates(UpdateArticleRequest updateArticleRequest, Article article) {
         if (!StringUtils.isBlank(updateArticleRequest.getContent())
-                && !updateArticleRequest.getContent().equals(article.getContent()))
+                && !updateArticleRequest.getContent().equals(article.getContent())) {
             article.setContent(updateArticleRequest.getContent());
+            int wordCount = updateArticleRequest.getContent().split(" ").length;
+            article.setWordCount(wordCount);
+        }
         //can only change title if new title not on the category
         if (!StringUtils.isBlank(updateArticleRequest.getTitle())
                 && !updateArticleRequest.getTitle().equals(article.getTitle()))
             article.setTitle(updateArticleRequest.getTitle());
+        if (!StringUtils.isBlank(updateArticleRequest.getSummary())
+                && !updateArticleRequest.getSummary().equals(article.getSummary()))
+            article.setSummary(updateArticleRequest.getSummary());
+        if (!StringUtils.isBlank(updateArticleRequest.getMetaDescription())
+                && !updateArticleRequest.getMetaDescription().equals(article.getMetaDescription()))
+            article.setMetaDescription(updateArticleRequest.getMetaDescription());
+        if (!StringUtils.isBlank(updateArticleRequest.getSeoTitle())
+                && !updateArticleRequest.getSeoTitle().equals(article.getSeoTitle()))
+            article.setSeoTitle(updateArticleRequest.getSeoTitle());
+        if (!StringUtils.isBlank(updateArticleRequest.getFeaturedImageLink())
+                && !updateArticleRequest.getFeaturedImageLink().equals(article.getFeaturedImageLink()))
+            article.setFeaturedImageLink(updateArticleRequest.getFeaturedImageLink());
+        if (!StringUtils.isBlank(updateArticleRequest.getReadTime())
+                && !updateArticleRequest.getReadTime().equals(article.getReadTime()))
+            article.setReadTime(updateArticleRequest.getReadTime());
+        article.setLastUpdateTime(LocalDateTime.now());
         return article;
     }
 }

@@ -55,4 +55,6 @@ public class CreateArticleRequest {
     @NotNull(message = "is advanced topic must not be null")
     private boolean isAdvancedArticle;
     private List<TopicItemProperties> topicItemProperties;
+    @Size(max = 255, message = "featured image link must be {max} character")
+    private String featuredImageLink;
 }

@@ -56,6 +56,18 @@ INSERT into role(id, role_name)
 select 13,'ROLE_CREATE_ARTICLE'
 where not exists(select id, role_name from role where id = 13 and role_name = 'ROLE_CREATE_ARTICLE');
 
+INSERT into role(id, role_name)
+select 14,'ROLE_DELETE_ARTICLE'
+where not exists(select id, role_name from role where id = 14 and role_name = 'ROLE_DELETE_ARTICLE');
+
+INSERT into role(id, role_name)
+select 15,'ROLE_FEATURE_ARTICLE'
+where not exists(select id, role_name from role where id = 15 and role_name = 'ROLE_FEATURE_ARTICLE');
+
+INSERT into role(id, role_name)
+select 16,'ROLE_MANAGE_ARTICLE'
+where not exists(select id, role_name from role where id = 16 and role_name = 'ROLE_MANAGE_ARTICLE');
+
 INSERT INTO user_account (id,email,username,firstname,lastname,password)
 SELECT 1,'ckamiaka2019@gmail.com', 'ckamiaka',
        'Chibuisi','Amiaka','$2a$12$ESK4BePk5B4cSek39pI3y.tGLeab1E0yqwFh30cY.r4l9BvcATH2e'
@@ -100,4 +112,16 @@ where not exists(select user_id, role_id from user_account_roles where user_id =
 insert into user_account_roles(user_id, role_id)
 select 1,13
 where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 13);
+
+insert into user_account_roles(user_id, role_id)
+select 1,14
+where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 14);
+
+insert into user_account_roles(user_id, role_id)
+select 1,15
+where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 15);
+
+insert into user_account_roles(user_id, role_id)
+select 1,16
+where not exists(select user_id, role_id from user_account_roles where user_id = 1 and role_id = 16);
 

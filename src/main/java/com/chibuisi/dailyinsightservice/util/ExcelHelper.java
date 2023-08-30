@@ -103,7 +103,7 @@ public class ExcelHelper {
                     topicAndTitleIndex.add(dateTagIndex);
                 }
 
-                article.setPublicationDate(LocalDateTime.now());
+                article.setPublishedDate(LocalDateTime.now());
 
                 //grab the rest of the columns in topic item properties object
                 List<TopicItemProperties> topicItemProperties = new ArrayList<>();

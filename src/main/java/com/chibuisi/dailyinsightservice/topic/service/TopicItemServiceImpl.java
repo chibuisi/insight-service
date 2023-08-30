@@ -35,12 +35,13 @@ public class TopicItemServiceImpl implements TopicItemService{
         List<Article> duplicates = new ArrayList<>();
         List<Article> saved = new ArrayList<>();
         articles.forEach(e -> {
+            //todo fix this empty object
             Optional<Article> existing = Optional.empty();
             if(existing.isPresent())
                 duplicates.add(e);
             else{
-                if(e.getPublicationDate() == null)
-                    e.setPublicationDate(LocalDateTime.now());
+                if(e.getPublishedDate() == null)
+                    e.setPublishedDate(LocalDateTime.now());
 //                e.setTopicName(validTopic.getName());
                 Article article = topicItemRepository.save(e);
                 saved.add(article);
