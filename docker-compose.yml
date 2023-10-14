@@ -35,7 +35,7 @@ services:
     image: alpine/curl
     container_name: create-topics-and-subscriptions
     volumes:
-      - "./scripts/create-topics-and-subscriptions.sh:/usr/local/bin/create-topics-and-subscriptions"
+      - "./bin/create-topics-and-subscriptions.sh:/usr/local/bin/create-topics-and-subscriptions"
     command: "create-topics-and-subscriptions"
 
 #  pubsub:
