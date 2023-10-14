@@ -31,6 +31,13 @@ services:
       PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
       PUBSUB_EMULATOR_HOST: "localhost:8681"
 
+    create-topics-and-subscriptions:
+    image: alpine/curl
+    container_name: create-topics-and-subscriptions
+    volumes:
+      - "./scripts/create-topics-and-subscriptions.sh:/usr/local/bin/create-topics-and-subscriptions"
+    command: "create-topics-and-subscriptions"
+
 #  pubsub:
 #    container_name: di-pubsub
 #    image: messagebird/gcloud-pubsub-emulator:latest
