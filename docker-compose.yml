@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 services:
   mysql:
     container_name: minor-insights-mysql
@@ -22,21 +22,29 @@ services:
       - emulators
       - pubsub
       - start
-      - --project=is-daily-insights-dev
+      - --project=is-minor-insights-dev
       - --host-port=0.0.0.0:8681
     container_name: minor-insights-pubsub
     ports:
     - 8681:8681
     environment:
-      PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
+      PUBSUB_PROJECT1: "is-minor-insights-dev,email:emailsubscription"
       PUBSUB_EMULATOR_HOST: "localhost:8681"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8681" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
 
-    create-topics-and-subscriptions:
+  create-topics-and-subscriptions:
     image: alpine/curl
     container_name: create-topics-and-subscriptions
     volumes:
       - "./bin/create-topics-and-subscriptions.sh:/usr/local/bin/create-topics-and-subscriptions"
     command: "create-topics-and-subscriptions"
+    depends_on:
+      - pubsub
 
 #  pubsub:
 #    container_name: di-pubsub
@@ -44,7 +52,7 @@ services:
 #    ports:
 #    - 8681:8681
 #    environment:
-#      PUBSUB_PROJECT1: "is-daily-insights-dev,email:emailsubscription"
+#      PUBSUB_PROJECT1: "is-minor-insights-dev,email:emailsubscription"
 #      PUBSUB_EMULATOR_HOST: "localhost:8681"
 
 #  redis:
@@ -61,7 +69,7 @@ services:
 #    ports:
 #    - 18081:8081
 #    environment:
-#      DATASTORE_PROJECT_ID: "is-daily-insights-dev"
+#      DATASTORE_PROJECT_ID: "is-minor-insights-dev"
 #      DATASTORE_LISTEN_ADDRESS: "0.0.0.0"
 #      DATASTORE_OPTIONS: "--consistency=1.0 --no-store-on-disk"
 volumes:

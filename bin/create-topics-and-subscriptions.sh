@@ -1,8 +1,8 @@
 #!/bin/sh
 
 set -e
-readonly PUBSUB_HOST_PORT='http://minor-insights-service-pubsub:8085'
-readonly PUBSUB_URL_PREFIX="$PUBSUB_HOST_PORT/v1/projects/is-minor-insights-service-dev"
+readonly PUBSUB_HOST_PORT='http://minor-insights-pubsub:8681'
+readonly PUBSUB_URL_PREFIX="$PUBSUB_HOST_PORT/v1/projects/is-minor-insights-dev"
 
 main() {
   echo 'Waiting on the PubSub service to come online'
@@ -39,7 +39,7 @@ create_subscription() {
     PUT "$PUBSUB_URL_PREFIX/subscriptions/$subscription_name" \
     --header 'Content-Type: application/json' \
     --data-raw "{
-        'topic': 'projects/is-minor-insights-service-dev/topics/$topic_name'
+        'topic': 'projects/is-minor-insights-dev/topics/$topic_name'
     }"
 }
 
